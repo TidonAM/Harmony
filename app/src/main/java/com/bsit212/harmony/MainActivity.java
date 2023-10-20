@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 etPassword.setEnabled(true);
                 etUsername.setEnabled(true);
                 btnLogin.setText("Logged Out Successfully");
+                registration = false;
                 btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this,R.color.BlueCornflower));
             } else if (state == RegistrationState.Ok && registration == false) {
                 registration = true;
