@@ -32,6 +32,8 @@ import org.linphone.core.*;
 //import org.linphone.core.tools.Log;
 
 
+//gittest
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public Core core;
