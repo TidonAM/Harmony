@@ -10,7 +10,8 @@
     <color name="BlueDarkPastel">#79A3E0</color>
     <color name="BlueCornflower">#5896F2</color>
     <color name="BlueFadingNight">#3B78D2</color>
-    <color name="Gray">#656565</color>
+    <color name="DarkGray">#656565</color>
     <color name="Red">#C3332B</color>
     <color name="Green">#09A144</color>
+    <color name="Gray">#D2D2D2</color>
 </resources>

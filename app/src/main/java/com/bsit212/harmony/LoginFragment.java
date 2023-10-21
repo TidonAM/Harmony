@@ -86,7 +86,7 @@ public class LoginFragment extends Fragment {
     }
 
     public static void login_ongoing(android.content.Context context) {
-        btnLogin.setText("Logging in. This might take a while.");
+        btnLogin.setText("Logging in");
         btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
         btnLogin.setEnabled(false);
         etUsername.setEnabled(false);
@@ -113,12 +113,12 @@ public class LoginFragment extends Fragment {
     }
 
     public static void login_success(android.content.Context context) {
+        btnLogin.setText("Log in");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
         btnLogin.setEnabled(true);
         etPassword.setEnabled(true);
         etUsername.setEnabled(true);
         tilShowPassword.setEnabled(true);
-        btnLogin.setText("Log in");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
     }
 
     private final TextWatcher login_textWatcher = new TextWatcher() {
@@ -129,12 +129,12 @@ public class LoginFragment extends Fragment {
             String stringEtUsername = etUsername.getText().toString();
             if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
                 btnLogin.setText("Log in");
-                btnLogin.setEnabled(false);
                 btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.Gray));
+                btnLogin.setEnabled(false);
             } else {
                 btnLogin.setText("Log in");
-                btnLogin.setEnabled(true);
                 btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.BlueCornflower));
+                btnLogin.setEnabled(true);
             }
         }
 
