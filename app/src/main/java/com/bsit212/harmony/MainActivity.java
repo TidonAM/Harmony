@@ -269,7 +269,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         core.start();
+    }
 
+    public void register(){
+        reloadDefaultAccountCreatorConfig();
+    }
+
+    void reloadDefaultAccountCreatorConfig() {
+        Log.i("[Assistant]")
     }
 
     @Override
