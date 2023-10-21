@@ -42,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud) ;
+
         //liblinphone Core initialization//
         factory = Factory.instance();
         core = factory.createCore(null, null, this);
-
         isHidden = true;
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
