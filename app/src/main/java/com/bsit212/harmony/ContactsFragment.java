@@ -3,12 +3,16 @@ package com.bsit212.harmony;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,9 +30,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
 
+    static TextView tvUsername;
+    static ImageButton imLogout;
+
     public ContactsFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,12 +44,21 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts,container,false);
 
+
+
+        tvUsername = view.findViewById(R.id.home_tv_username);
+        imLogout = view.findViewById(R.id.home_ib_logout);
         Button btnpeople1 = view.findViewById(R.id.btn_people1);
         Button btnpeople2 = view.findViewById(R.id.btn_people2);
         Button btnpeople3 = view.findViewById(R.id.btn_people3);
         btnpeople1.setOnClickListener(this);
         btnpeople2.setOnClickListener(this);
         btnpeople3.setOnClickListener(this);
+//        if (MainActivity.isLoggedIn == true) {
+//            imLogout.setEnabled(true);
+//        } else {
+//            imLogout.setEnabled(false);
+//        }
 
         return view;
 

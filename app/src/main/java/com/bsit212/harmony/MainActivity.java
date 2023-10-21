@@ -1,27 +1,11 @@
 package com.bsit212.harmony;
 
-import static com.bsit212.harmony.LoginFragment.btnLogin;
-import static com.bsit212.harmony.LoginFragment.etPassword;
-import static com.bsit212.harmony.LoginFragment.etUsername;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.util.Log;
 import org.linphone.core.ChatRoom;
-
 import org.linphone.core.*;
-
-//import org.linphone.core.tools.Log;
 
 
 //gittest
@@ -35,33 +19,28 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean isLoggedIn = false;
     public boolean isHidden;
+    public static boolean goLogin;
     public boolean isIn;
+    LoginFragment login;
+    ContactsFragment contacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud) ;
+        goLogin = false;
+
+        login = new LoginFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,login).addToBackStack(null).commit();
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
 
         //liblinphone Core initialization//
         factory = Factory.instance();
         core = factory.createCore(null, null, this);
         isHidden = true;
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
-                        login(etUsername.getText().toString(),etPassword.getText().toString());
-                    }
-                } catch(Exception e) {
-                    Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    Log.i("yowell",e.toString());
-                }
-            }
-        });
+
 
     }
 
@@ -81,32 +60,28 @@ public class MainActivity extends AppCompatActivity {
                 //if Logged in successfully
                 isLoggedIn = true;
                 LoginFragment.login_success(MainActivity.this);
-                TextView tvUsername = findViewById(R.id.home_tv_username);
-                ImageButton imLogout = findViewById(R.id.home_ib_logout);
-                if (isLoggedIn == true) {
-                    imLogout.setEnabled(true);
-                } else {
-                    imLogout.setEnabled(false);
-                }
-                imLogout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (isLoggedIn ==true){
-                            background.unregister(core);
-                            //change fragment to login
-                            btnLogin.setEnabled(false);
-                            btnLogin.setText("Logging Out");
-                            btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this,R.color.Gray));
 
-                        }
-                    }
-                });
-                if (etUsername.getText().toString() == null) {
-                    tvUsername.setText("");
-                } else {
-                    tvUsername.setText(etUsername.getText().toString());
-                    Log.i("yowell",core.getAccountList().toString());
-                }
+                contacts = new ContactsFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,contacts).commit();
+
+
+//                contacts.imLogout.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        background.unregister(core);
+//                        //change fragment to login
+//                        btnLogin.setEnabled(false);
+//                        btnLogin.setText("Logging Out");
+//                        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this,R.color.Gray));
+//                    }
+//                });
+
+//                if (etUsername.getText().toString() == null) {
+//                    tvUsername.setText("");
+//                } else {
+//                    tvUsername.setText(etUsername.getText().toString());
+//                    Log.i("yowell",core.getAccountList().toString());
+//                }
 
             }
         }
@@ -252,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
-    private void login(String username, String password) {
+    public void login(String username, String password) {
         String domain = "sip.linphone.org";
         TransportType transportType = TransportType.Tls;
 

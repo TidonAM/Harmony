@@ -64,7 +64,7 @@
                     app:hintAnimationEnabled="false"
                     app:hintEnabled="false"
                     app:passwordToggleEnabled="true"
-                    app:passwordToggleTint="@color/Gray">
+                    app:passwordToggleTint="@color/DarkGray">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/login_et_password"

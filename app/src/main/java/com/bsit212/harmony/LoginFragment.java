@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import static com.bsit212.harmony.MainActivity.goLogin;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.bsit212.harmony.MainActivity;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -53,6 +56,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        MainActivity ma = new MainActivity();
         View view = inflater.inflate(R.layout.fragment_login,container,false);
         linearLayout = view.findViewById(R.id.login_layout_main);
         etUsername = view.findViewById(R.id.login_et_username);
@@ -61,9 +65,23 @@ public class LoginFragment extends Fragment {
         tvForgot = view.findViewById(R.id.login_tv_forget);
         tvRegister = view.findViewById(R.id.login_tv_register);
         btnLogin = view.findViewById(R.id.login_btn_login);
-
         etUsername.addTextChangedListener(login_textWatcher);
         etPassword.addTextChangedListener(login_textWatcher);
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
+                        goLogin = true;
+//                        MainActivity.login(etUsername.getText().toString(),etPassword.getText().toString());
+                    }
+                } catch(Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    Log.i("yowell",e.toString());
+                }
+            }
+        });
 
         tvForgot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +102,28 @@ public class LoginFragment extends Fragment {
 
         return view;
     }
+
+    public final TextWatcher login_textWatcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String stringEtPassword = etPassword.getText().toString();
+            String stringEtUsername = etUsername.getText().toString();
+            if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
+                btnLoginDisabled(getContext());
+            } else {
+                btnLoginEnable(getContext());
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+        }
+    };
+
 
     public static void login_ongoing(android.content.Context context) {
         btnLogin.setText("Logging in");
@@ -121,30 +161,17 @@ public class LoginFragment extends Fragment {
         tilShowPassword.setEnabled(true);
     }
 
-    private final TextWatcher login_textWatcher = new TextWatcher() {
+    public static void btnLoginEnable(android.content.Context context){
+        btnLogin.setText("Log in");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+        btnLogin.setEnabled(true);
+    }
 
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String stringEtPassword = etPassword.getText().toString();
-            String stringEtUsername = etUsername.getText().toString();
-            if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
-                btnLogin.setText("Log in");
-                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.Gray));
-                btnLogin.setEnabled(false);
-            } else {
-                btnLogin.setText("Log in");
-                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.BlueCornflower));
-                btnLogin.setEnabled(true);
-            }
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    };
+    public static void btnLoginDisabled(android.content.Context context){
+        btnLogin.setText("Log in");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
+        btnLogin.setEnabled(false);
+    }
 
 
 
