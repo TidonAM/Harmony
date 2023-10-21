@@ -1,5 +1,6 @@
 package com.bsit212.harmony;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,13 +8,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ContactsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,6 +28,41 @@ public class ContactsFragment extends Fragment {
 
     public ContactsFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_contacts,container,false);
+
+        Button btnpeople1 = view.findViewById(R.id.btn_people1);
+        Button btnpeople2 = view.findViewById(R.id.btn_people2);
+        Button btnpeople3 = view.findViewById(R.id.btn_people3);
+        btnpeople1.setOnClickListener(this);
+        btnpeople2.setOnClickListener(this);
+        btnpeople3.setOnClickListener(this);
+
+        return view;
+
+    }
+
+    public void onClick(View v) {
+        Intent intent = new Intent(getContext(), Message.class);
+        Button b = (Button)v;
+        intent.putExtra("chatinitial", b.getText().toString());
+        switch (v.getId()) {
+            case R.id.btn_people1:
+                intent.putExtra("chatname", "Gardiola");
+                break;
+            case R.id.btn_people2:
+                intent.putExtra("chatname", "Garcia");
+                break;
+            case R.id.btn_people3:
+                intent.putExtra("chatname", "Pascua");
+                break;
+        }
+        getContext().startActivity(intent);
     }
 
     /**
@@ -55,10 +92,4 @@ public class ContactsFragment extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_contacts, container, false);
-    }
 }

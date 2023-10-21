@@ -1,12 +1,26 @@
 package com.bsit212.harmony;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,9 +38,117 @@ public class LoginFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    static LinearLayout linearLayout;
+    static EditText etUsername;
+    static EditText etPassword;
+    static TextInputLayout tilShowPassword;
+    static TextView tvForgot;
+    static TextView tvRegister;
+    static Button btnLogin;
+
     public LoginFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_login,container,false);
+        linearLayout = view.findViewById(R.id.login_layout_main);
+        etUsername = view.findViewById(R.id.login_et_username);
+        etPassword = view.findViewById(R.id.login_et_password);
+        tilShowPassword = view.findViewById(R.id.login_til_password);
+        tvForgot = view.findViewById(R.id.login_tv_forget);
+        tvRegister = view.findViewById(R.id.login_tv_register);
+        btnLogin = view.findViewById(R.id.login_btn_login);
+
+        etUsername.addTextChangedListener(login_textWatcher);
+        etPassword.addTextChangedListener(login_textWatcher);
+
+
+
+        tvForgot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/login/email"));
+                startActivity(browserIntent);
+            }
+        });
+
+        tvRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/register/email"));
+                startActivity(browserIntent);
+//                bg.delete();
+            }
+        });
+
+        return view;
+    }
+
+    public static void login_ongoing(android.content.Context context) {
+        btnLogin.setText("Logging in. This might take a while.");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
+        btnLogin.setEnabled(false);
+        etUsername.setEnabled(false);
+        etPassword.setEnabled(false);
+        tilShowPassword.setEnabled(false);
+    }
+
+    public static void login_incorrect(android.content.Context context) {
+        btnLogin.setText("Incorrect Credentials! Try Again");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Red));
+        btnLogin.setEnabled(false);
+        etUsername.setEnabled(true);
+        etPassword.setEnabled(true);
+        tilShowPassword.setEnabled(true);
+    }
+
+    public static void logout_success(android.content.Context context) {
+        btnLogin.setText("Logged Out Successfully");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+        btnLogin.setEnabled(true);
+        etPassword.setEnabled(true);
+        etUsername.setEnabled(true);
+        tilShowPassword.setEnabled(true);
+    }
+
+    public static void login_success(android.content.Context context) {
+        btnLogin.setEnabled(true);
+        etPassword.setEnabled(true);
+        etUsername.setEnabled(true);
+        tilShowPassword.setEnabled(true);
+        btnLogin.setText("Log in");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+    }
+
+    private final TextWatcher login_textWatcher = new TextWatcher() {
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            String stringEtPassword = etPassword.getText().toString();
+            String stringEtUsername = etUsername.getText().toString();
+            if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
+                btnLogin.setText("Log in");
+                btnLogin.setEnabled(false);
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.Gray));
+            } else {
+                btnLogin.setText("Log in");
+                btnLogin.setEnabled(true);
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(getContext(),R.color.BlueCornflower));
+            }
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+        @Override
+        public void afterTextChanged(Editable editable) {
+        }
+    };
+
+
 
     /**
      * Use this factory method to create a new instance of
@@ -55,10 +177,11 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
-    }
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        // Inflate the layout for this fragment
+//        return inflater.inflate(R.layout.fragment_login, container, false);
+//    }
+
 }
