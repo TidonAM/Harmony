@@ -165,6 +165,12 @@ public class LoginFragment extends Fragment {
         tilShowPassword.setEnabled(true);
     }
 
+    public static void logging_out(android.content.Context context){
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Logging Out");
+        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
+    }
+
     public static void btnLoginEnable(android.content.Context context){
         btnLogin.setText("Log in");
         btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));

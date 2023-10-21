@@ -1,9 +1,12 @@
 package com.bsit212.harmony;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+
 import org.linphone.core.ChatRoom;
 import org.linphone.core.*;
 
@@ -17,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatRoom chatRoom;
     public background bg = new background();
 
-    public boolean isLoggedIn = false;
+    public static boolean isLoggedIn = false;
     public boolean isHidden;
     public static boolean goLogin;
     public boolean isIn;
@@ -39,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
         factory = Factory.instance();
         core = factory.createCore(null, null, this);
         isHidden = true;
-
-
 
     }
 
@@ -64,17 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 contacts = new ContactsFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,contacts).commit();
 
-
-//                contacts.imLogout.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        background.unregister(core);
-//                        //change fragment to login
-//                        btnLogin.setEnabled(false);
-//                        btnLogin.setText("Logging Out");
-//                        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this,R.color.Gray));
-//                    }
-//                });
 
 //                if (etUsername.getText().toString() == null) {
 //                    tvUsername.setText("");
@@ -135,6 +125,31 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }
     };
+
+    public void unregister() {
+        // Here we will disable the registration of our Account
+        Account account = core.getDefaultAccount();
+        if (account == null) {
+            return;
+        }
+        AccountParams params = account.getParams();
+        // Returned params object is const, so to make changes we first need to clone it
+        AccountParams clonedParams = params.clone();
+        // Now let's make our changes
+        clonedParams.setRegisterEnabled(false);
+        // And apply them
+        account.setParams(clonedParams);
+    }
+
+    public void delete() {
+        Account account = core.getDefaultAccount();
+        if (account == null) {
+            return;
+        }
+        core.removeAccount(account);
+        core.clearAccounts();
+        core.clearAllAuthInfo();
+    }
 //
 //    private void createBasicChatRoom() {
 //        // In this tutorial we will create a Basic chat room
@@ -260,8 +275,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        background.unregister(core);
-        background.delete(core);
+        unregister();
+        delete();
 
     }
 }

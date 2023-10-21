@@ -54,11 +54,23 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         btnpeople1.setOnClickListener(this);
         btnpeople2.setOnClickListener(this);
         btnpeople3.setOnClickListener(this);
-//        if (MainActivity.isLoggedIn == true) {
-//            imLogout.setEnabled(true);
-//        } else {
-//            imLogout.setEnabled(false);
-//        }
+
+        if (MainActivity.isLoggedIn == true) {
+            imLogout.setEnabled(true);
+        } else {
+            imLogout.setEnabled(false);
+        }
+
+        imLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.unregister();
+                }
+                LoginFragment.logging_out(getContext());
+            }
+        });
 
         return view;
 
