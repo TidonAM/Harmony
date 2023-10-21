@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MessageFragment">
+    android:background="@drawable/bg_cloud"
+    tools:context=".Message">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearlayout"
+            android:layout_alignParentTop="true"
+            android:paddingBottom="30dp"
+            tools:itemCount="50" />
+
+        <LinearLayout
+            android:id="@+id/linearlayout"
+            android:background="@drawable/custom_roundcorners_toponly"
+            android:backgroundTint="@color/BlueCornflower"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <ImageView
+                android:id="@+id/img_call"
+                android:layout_width="50dp"
+                android:layout_height="70dp"
+                android:layout_weight="10"
+                android:clickable="true"
+                android:src="@drawable/icon_call" />
+
+            <EditText
+                android:id="@+id/et_type"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="80"
+                android:background="@drawable/custom_roundcorners"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:hint="Type here"
+                android:paddingStart="20dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/Gray" />
+
+            <ImageView
+                android:id="@+id/img_send"
+                android:layout_width="50dp"
+                android:layout_height="70dp"
+                android:layout_weight="10"
+                android:clickable="true"
+                android:src="@drawable/icon_send" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+
+</LinearLayout>

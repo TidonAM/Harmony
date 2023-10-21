@@ -1,23 +1,23 @@
 package com.bsit212.harmony;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MessageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.LinkedList;
+import java.util.List;
+
 public class MessageFragment extends Fragment {
 
-    //nigga
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -59,7 +59,43 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_message);
+
+            Intent intent = getIntent();
+            String stringUsername = intent.getStringExtra("chatname");
+
+            EditText etType = findViewById(R.id.et_type);
+            List<String> items = new LinkedList<>();
+
+            RecyclerView recyclerView = findViewById(R.id.RecyclerView);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            ChatRecyclerView chatRecyclerView = new ChatRecyclerView(items);
+            recyclerView.setAdapter(chatRecyclerView);
+
+            findViewById(R.id.img_send).setOnClickListener(view -> {
+                String typed = etType.getText().toString();
+                typed.replaceAll(System.getProperty("line.separator"), "");
+                if (typed.matches("")) {
+                    Toast toast = Toast.makeText(Message.this, "Type first", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    items.add(typed);
+                    counter++;
+                    chatRecyclerView.notifyItemInserted(items.size()-1);
+                    recyclerView.scrollToPosition(items.size()-1);
+                    etType.setText("");
+                }
+            });
+
+            findViewById(R.id.img_call).setOnClickListener(view -> {
+                Intent intent2 = new Intent(Message.this, call.class);
+                intent2.putExtra("chatname", stringUsername);
+                Message.this.startActivity(intent2);
+            });
+        }
         return inflater.inflate(R.layout.fragment_message, container, false);
     }
 }
