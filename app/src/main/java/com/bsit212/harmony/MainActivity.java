@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    login(etUsername.getText().toString(),etPassword.getText().toString());
+                    if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
+                        login(etUsername.getText().toString(),etPassword.getText().toString());
+                    }
                 } catch(Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     Log.i("yowell",e.toString());

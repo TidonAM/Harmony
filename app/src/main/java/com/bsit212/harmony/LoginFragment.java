@@ -65,8 +65,6 @@ public class LoginFragment extends Fragment {
         etUsername.addTextChangedListener(login_textWatcher);
         etPassword.addTextChangedListener(login_textWatcher);
 
-
-
         tvForgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

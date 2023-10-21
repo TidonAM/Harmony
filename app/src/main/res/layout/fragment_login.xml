@@ -98,7 +98,7 @@
                     android:textColor="@color/BlueCornflower"
                     android:textSize="12sp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/login_btn_login"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -109,7 +109,9 @@
                     android:text="Log in"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    app:cornerRadius="30dp" />
+                    android:theme="@style/Theme.MaterialComponents"
+                    app:cornerRadius="100dp"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
