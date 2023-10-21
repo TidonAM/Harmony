@@ -32,6 +32,7 @@ import com.google.android.material.textfield.TextInputLayout;
  */
 public class LoginFragment extends Fragment {
 
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -74,7 +75,10 @@ public class LoginFragment extends Fragment {
                 try {
                     if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
                         goLogin = true;
-//                        MainActivity.login(etUsername.getText().toString(),etPassword.getText().toString());
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        if (mainActivity != null) {
+                            mainActivity.login(etUsername.getText().toString(), etPassword.getText().toString());
+                        }
                     }
                 } catch(Exception e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();

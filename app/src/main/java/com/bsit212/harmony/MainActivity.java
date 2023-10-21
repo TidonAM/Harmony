@@ -8,7 +8,7 @@ import org.linphone.core.ChatRoom;
 import org.linphone.core.*;
 
 
-//gittest
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -262,5 +262,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         background.unregister(core);
         background.delete(core);
+
     }
 }
