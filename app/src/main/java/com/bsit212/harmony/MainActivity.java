@@ -10,7 +10,7 @@ import android.view.View;
 import org.linphone.core.ChatRoom;
 import org.linphone.core.*;
 
-
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -271,12 +271,15 @@ public class MainActivity extends AppCompatActivity {
         core.start();
     }
 
-    public void register(){
-        reloadDefaultAccountCreatorConfig();
-    }
-
-    void reloadDefaultAccountCreatorConfig() {
-        Log.i("[Assistant]")
+    public void register(String username, String password){
+        AccountCreator accountCreator = core.createAccountCreator(null);
+        accountCreator.reset();
+        accountCreator.setLanguage(Locale.getDefault().getDisplayLanguage());
+        accountCreator.setUsername(username);
+        accountCreator.setPassword(password);
+        accountCreator.setDomain("sip.linphone.org");
+        accountCreator.setTransport(TransportType.Tls);//
+        accountCreator.createAccount();
     }
 
     @Override
