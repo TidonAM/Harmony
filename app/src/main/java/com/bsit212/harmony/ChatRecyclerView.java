@@ -42,9 +42,7 @@ class ChatVH extends RecyclerView.ViewHolder{
     private ChatRecyclerView chatRecyclerView;
     public ChatVH(@NonNull View itemView) {
         super(itemView);
-
         textView = itemView.findViewById(R.id.tv_send);
-
     }
 
     public ChatVH linkAdapter(ChatRecyclerView chatRecyclerView){

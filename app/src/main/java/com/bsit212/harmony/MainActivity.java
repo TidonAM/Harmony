@@ -1,7 +1,10 @@
 package com.bsit212.harmony;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -24,18 +27,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean isHidden;
     public static boolean goLogin;
     public boolean isIn;
-    LoginFragment login;
-    ContactsFragment contacts;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        goLogin = false;
-
-        login = new LoginFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,login).addToBackStack(null).commit();
+//        login = new LoginFragment();
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,login).addToBackStack(null).commit();
+        launchFragment_login();
         getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
 
         //liblinphone Core initialization//
@@ -62,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 isLoggedIn = true;
                 LoginFragment.login_success(MainActivity.this);
 
-                contacts = new ContactsFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,contacts).commit();
+//                contacts = new ContactsFragment();
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,contacts).commit();
+                launchFragment_contacts();
 
 
 //                if (etUsername.getText().toString() == null) {
@@ -150,6 +152,22 @@ public class MainActivity extends AppCompatActivity {
         core.clearAccounts();
         core.clearAllAuthInfo();
     }
+
+    public void launchFragment_login() {
+        LoginFragment fr = new LoginFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+    }
+
+    public void launchFragment_contacts() {
+        ContactsFragment fr = new ContactsFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+    }
+
+    public void launchFragment_message() {
+        MessageFragment fr = new MessageFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+    }
+
 //
 //    private void createBasicChatRoom() {
 //        // In this tutorial we will create a Basic chat room
@@ -271,11 +289,73 @@ public class MainActivity extends AppCompatActivity {
         core.start();
     }
 
-    public void register(String username, String password){
+    public void register(String username, String password, String email){
         AccountCreator accountCreator = core.createAccountCreator(null);
         accountCreator.reset();
+        accountCreator.addListener(new AccountCreatorListener() {
+            @Override
+            public void onCreateAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onCreateAccount");
+            }
+
+            @Override
+            public void onIsAccountActivated(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onIsAccountActivated");
+            }
+
+            @Override
+            public void onUpdateAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onUpdateAccount");
+            }
+
+            @Override
+            public void onActivateAlias(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onActivateAlias");
+            }
+
+            @Override
+            public void onSendToken(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onSendToken");
+            }
+
+            @Override
+            public void onLinkAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onLinkAccount");
+            }
+
+            @Override
+            public void onIsAccountExist(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onIsAccountExist");
+            }
+
+            @Override
+            public void onLoginLinphoneAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onLoginLinphoneAccount");
+            }
+
+            @Override
+            public void onActivateAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onActivateAccount");
+            }
+
+            @Override
+            public void onRecoverAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onRecoverAccount");
+            }
+
+            @Override
+            public void onIsAliasUsed(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onIsAliasUsed");
+            }
+
+            @Override
+            public void onIsAccountLinked(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
+                Log.i("yowell","status: "+ status +" onIsAccountLinked");
+            }
+        });
         accountCreator.setLanguage(Locale.getDefault().getDisplayLanguage());
         accountCreator.setUsername(username);
+        accountCreator.setEmail("angeltidon18@yahoo.com");
         accountCreator.setPassword(password);
         accountCreator.setDomain("sip.linphone.org");
         accountCreator.setTransport(TransportType.Tls);//

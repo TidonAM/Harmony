@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import static com.bsit212.harmony.MainActivity.goLogin;
 
@@ -57,7 +58,6 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        MainActivity ma = new MainActivity();
         View view = inflater.inflate(R.layout.fragment_login,container,false);
         linearLayout = view.findViewById(R.id.login_layout_main);
         etUsername = view.findViewById(R.id.login_et_username);
@@ -74,7 +74,6 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 try {
                     if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
-                        goLogin = true;
                         MainActivity mainActivity = (MainActivity) getActivity();
                         if (mainActivity != null) {
                             mainActivity.login(etUsername.getText().toString(), etPassword.getText().toString());
@@ -127,7 +126,6 @@ public class LoginFragment extends Fragment {
         public void afterTextChanged(Editable editable) {
         }
     };
-
 
     public static void login_ongoing(android.content.Context context) {
         btnLogin.setText("Logging in");

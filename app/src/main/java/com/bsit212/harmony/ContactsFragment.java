@@ -44,8 +44,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts,container,false);
 
-
-
         tvUsername = view.findViewById(R.id.home_tv_username);
         imLogout = view.findViewById(R.id.home_ib_logout);
         Button btnpeople1 = view.findViewById(R.id.btn_people1);
@@ -67,6 +65,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
                     mainActivity.unregister();
+                    mainActivity.launchFragment_login();
                 }
                 LoginFragment.logging_out(getContext());
             }
