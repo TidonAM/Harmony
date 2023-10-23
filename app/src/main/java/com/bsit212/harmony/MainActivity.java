@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
 //        login = new LoginFragment();
 //        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,login).addToBackStack(null).commit();
         launchFragment_login();
-        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
 
         //liblinphone Core initialization//
         factory = Factory.instance();
         core = factory.createCore(null, null, this);
+
         isHidden = true;
 
     }
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 //                contacts = new ContactsFragment();
 //                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,contacts).commit();
                 launchFragment_contacts();
-
 
 //                if (etUsername.getText().toString() == null) {
 //                    tvUsername.setText("");
@@ -128,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
 //        }
     };
 
+
+
     public void unregister() {
         // Here we will disable the registration of our Account
         Account account = core.getDefaultAccount();
@@ -156,16 +157,25 @@ public class MainActivity extends AppCompatActivity {
     public void launchFragment_login() {
         LoginFragment fr = new LoginFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
     }
 
     public void launchFragment_contacts() {
         ContactsFragment fr = new ContactsFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
     }
 
     public void launchFragment_message() {
         MessageFragment fr = new MessageFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_call);
+    }
+
+    public void launchFragment_register() {
+        RegisterFragment fr = new RegisterFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
     }
 
 //
@@ -272,6 +282,8 @@ public class MainActivity extends AppCompatActivity {
         if (address != null) {
             address.setTransport(transportType);
         }
+        core.createProxyConfig();
+
         accountParams.setServerAddress(address);
         accountParams.setRegisterEnabled(true);
         Account account = core.createAccount(accountParams);
@@ -290,8 +302,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void register(String username, String password, String email){
-        AccountCreator accountCreator = core.createAccountCreator(null);
-        accountCreator.reset();
+        Log.i("yowell","register on");
+        AccountCreator accountCreator = core.createAccountCreator("3RtCaziRIfO7VE03ntejWDSTndwOxTggREP8ScJh");
         accountCreator.addListener(new AccountCreatorListener() {
             @Override
             public void onCreateAccount(@NonNull AccountCreator creator, AccountCreator.Status status, @Nullable String response) {
@@ -355,12 +367,22 @@ public class MainActivity extends AppCompatActivity {
         });
         accountCreator.setLanguage(Locale.getDefault().getDisplayLanguage());
         accountCreator.setUsername(username);
-        accountCreator.setEmail("angeltidon18@yahoo.com");
+        accountCreator.setEmail(email);
         accountCreator.setPassword(password);
         accountCreator.setDomain("sip.linphone.org");
-        accountCreator.setTransport(TransportType.Tls);//
+        String actcode = accountCreator.getActivationCode();
+        Log.i("yowell","");
+        accountCreator.setTransport(TransportType.Tls);
         accountCreator.createAccount();
     }
+
+    public void register2(){
+        core.addProxyConfig(core.createProxyConfig());
+
+
+    }
+
+
 
     @Override
     protected void onDestroy() {

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.bsit212.harmony.MainActivity;
@@ -51,6 +52,8 @@ public class LoginFragment extends Fragment {
     static TextView tvRegister;
     static Button btnLogin;
 
+    static ImageView autoSet;
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -66,8 +69,17 @@ public class LoginFragment extends Fragment {
         tvForgot = view.findViewById(R.id.login_tv_forget);
         tvRegister = view.findViewById(R.id.login_tv_register);
         btnLogin = view.findViewById(R.id.login_btn_login);
+        autoSet = view.findViewById(R.id.imageView4);
         etUsername.addTextChangedListener(login_textWatcher);
         etPassword.addTextChangedListener(login_textWatcher);
+
+        autoSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                etUsername.setText("tatsudoni");
+                etPassword.setText("tatsudoni");
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,8 +109,13 @@ public class LoginFragment extends Fragment {
         tvRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/register/email"));
-                startActivity(browserIntent);
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/register/email"));
+//                startActivity(browserIntent);
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.launchFragment_register();
+                }
+
 //                bg.delete();
             }
         });
@@ -148,7 +165,7 @@ public class LoginFragment extends Fragment {
     public static void logout_success(android.content.Context context) {
         btnLogin.setText("Logged Out Successfully");
         btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnLogin.setEnabled(true);
+        btnLogin.setEnabled(false);
         etPassword.setEnabled(true);
         etUsername.setEnabled(true);
         tilShowPassword.setEnabled(true);
