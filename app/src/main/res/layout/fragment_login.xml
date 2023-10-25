@@ -33,7 +33,7 @@
                     android:id="@+id/imageView4"
                     android:layout_width="match_parent"
                     android:layout_height="85dp"
-                    app:srcCompat="@drawable/icon_cloud" />
+                    app:srcCompat="@drawable/icon_note" />
 
                 <EditText
                     android:id="@+id/login_et_username"
