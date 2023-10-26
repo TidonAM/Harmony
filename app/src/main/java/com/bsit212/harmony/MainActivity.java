@@ -230,6 +230,10 @@ public class MainActivity extends AppCompatActivity {
         launchFragment(launchFragment.message);
     }
 
+    public void MessagetoCall(){
+        launchFragment(launchFragment.call);
+    }
+
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
