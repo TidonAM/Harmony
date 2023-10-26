@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                                                 for(QueryDocumentSnapshot document : task.getResult()) {
                                                     Log.i("yowell", document.getId() + " => " + document.getData());
                                                     currentUsername = (String) document.get("username");
+                                                    Log.i("yowell", currentUsername);
                                                     launchFragment(launchFragment.contacts);
                                                 }
                                             } else {
