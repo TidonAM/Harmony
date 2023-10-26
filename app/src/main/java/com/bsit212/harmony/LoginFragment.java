@@ -1,16 +1,11 @@
 package com.bsit212.harmony;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import static com.bsit212.harmony.MainActivity.goLogin;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,27 +17,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.bsit212.harmony.MainActivity;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment{
 
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+//    TODO: Rename parameter arguments, choose names that match
+//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
+//
+//    TODO: Rename and change types of parameters
+//    private String mParam1;
+//    private String mParam2;
 
     static LinearLayout linearLayout;
     static EditText etUsername;
@@ -51,11 +39,31 @@ public class LoginFragment extends Fragment {
     static TextView tvForgot;
     static TextView tvRegister;
     static Button btnLogin;
-
     static ImageView autoSet;
 
     public LoginFragment() {
         // Required empty public constructor
+    }
+
+    public void onClick(View v){
+        if (v.getId() == R.id.imageView4){
+            etUsername.setText("angeltidon18@yahoo.com");
+            etPassword.setText("angelt");
+        } else if (v.getId() == R.id.login_btn_login) {
+            if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.login(etUsername.getText().toString(),etPassword.getText().toString());
+                }
+            }
+        } else if (v.getId() == R.id.login_tv_forget) {
+
+        } else if (v.getId() == R.id.login_tv_register) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.launchFragment("register");
+            }
+        }
     }
 
     @Override
@@ -72,53 +80,10 @@ public class LoginFragment extends Fragment {
         autoSet = view.findViewById(R.id.imageView4);
         etUsername.addTextChangedListener(login_textWatcher);
         etPassword.addTextChangedListener(login_textWatcher);
-
-        autoSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etUsername.setText("tatsudoni");
-                etPassword.setText("tatsudoni");
-            }
-        });
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        if (mainActivity != null) {
-                            mainActivity.login();
-                        }
-                    }
-                } catch(Exception e) {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    Log.i("yowell",e.toString());
-                }
-            }
-        });
-
-        tvForgot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/login/email"));
-                startActivity(browserIntent);
-            }
-        });
-
-        tvRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/register/email"));
-//                startActivity(browserIntent);
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null) {
-                    mainActivity.launchFragment_register();
-                }
-
-//                bg.delete();
-            }
-        });
+        autoSet.setOnClickListener(this::onClick);
+        btnLogin.setOnClickListener(this::onClick);
+        tvForgot.setOnClickListener(this::onClick);
+        tvRegister.setOnClickListener(this::onClick);
 
         return view;
     }
@@ -130,9 +95,9 @@ public class LoginFragment extends Fragment {
             String stringEtPassword = etPassword.getText().toString();
             String stringEtUsername = etUsername.getText().toString();
             if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
-                btnLoginDisabled(getContext());
+                login_changeUI(LoginState.btnDisable,getContext());
             } else {
-                btnLoginEnable(getContext());
+                login_changeUI(LoginState.btnEnable,getContext());
             }
         }
 
@@ -144,88 +109,86 @@ public class LoginFragment extends Fragment {
         }
     };
 
-    public static void login_ongoing(android.content.Context context) {
-        btnLogin.setText("Logging in");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
-        btnLogin.setEnabled(false);
-        etUsername.setEnabled(false);
-        etPassword.setEnabled(false);
-        tilShowPassword.setEnabled(false);
+    public enum LoginState {
+        in_ongoing,
+        in_incorrect,
+        in_success,
+        out_success,
+        out_ongoing,
+        btnEnable,
+        btnDisable
     }
 
-    public static void login_incorrect(android.content.Context context) {
-        btnLogin.setText("Incorrect Credentials! Try Again");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Red));
-        btnLogin.setEnabled(false);
-        etUsername.setEnabled(true);
-        etPassword.setEnabled(true);
-        tilShowPassword.setEnabled(true);
-    }
-
-    public static void logout_success(android.content.Context context) {
-        btnLogin.setText("Logged Out Successfully");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnLogin.setEnabled(false);
-        etPassword.setEnabled(true);
-        etUsername.setEnabled(true);
-        tilShowPassword.setEnabled(true);
-    }
-
-    public static void login_success(android.content.Context context) {
-        btnLogin.setText("Log in");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnLogin.setEnabled(true);
-        etPassword.setEnabled(true);
-        etUsername.setEnabled(true);
-        tilShowPassword.setEnabled(true);
-    }
-
-    public static void logging_out(android.content.Context context){
-        btnLogin.setEnabled(false);
-        btnLogin.setText("Logging Out");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
-    }
-
-    public static void btnLoginEnable(android.content.Context context){
-        btnLogin.setText("Log in");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnLogin.setEnabled(true);
-    }
-
-    public static void btnLoginDisabled(android.content.Context context){
-        btnLogin.setText("Log in");
-        btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
-        btnLogin.setEnabled(false);
-    }
-
-
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public static void login_changeUI(LoginState state,android.content.Context context){
+        switch (state) {
+            case in_ongoing:
+                btnLogin.setText("Logging in");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
+                btnLogin.setEnabled(false);
+                etUsername.setEnabled(false);
+                etPassword.setEnabled(false);
+                tilShowPassword.setEnabled(false);
+                break;
+            case in_incorrect:
+                btnLogin.setText("Incorrect Credentials! Try Again");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Red));
+                btnLogin.setEnabled(false);
+                etUsername.setEnabled(true);
+                etPassword.setEnabled(true);
+                tilShowPassword.setEnabled(true);
+                break;
+            case in_success:
+                btnLogin.setText("Log in");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+                btnLogin.setEnabled(true);
+                etPassword.setEnabled(true);
+                etUsername.setEnabled(true);
+                tilShowPassword.setEnabled(true);
+                break;
+            case out_success:
+                btnLogin.setText("Logged Out Successfully");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+                btnLogin.setEnabled(false);
+                etPassword.setEnabled(true);
+                etUsername.setEnabled(true);
+                tilShowPassword.setEnabled(true);
+                break;
+            case out_ongoing:
+                btnLogin.setEnabled(false);
+                btnLogin.setText("Logging Out");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
+                break;
+            case btnEnable:
+                btnLogin.setText("Log in");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+                btnLogin.setEnabled(true);
+                break;
+            case btnDisable:
+                btnLogin.setText("Log in");
+                btnLogin.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
+                btnLogin.setEnabled(false);
+                break;
         }
     }
+
+//    TODO: Rename and change types and number of parameters
+//    public static LoginFragment newInstance(String param1, String param2) {
+//        LoginFragment fragment = new LoginFragment();
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
+//
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
+//    }
 
 //    @Override
 //    public View onCreateView(LayoutInflater inflater, ViewGroup container,

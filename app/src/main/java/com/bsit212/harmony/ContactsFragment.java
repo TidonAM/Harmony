@@ -64,10 +64,9 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             public void onClick(View view) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
-                    mainActivity.unregister();
-                    mainActivity.launchFragment_login();
+                    mainActivity.signOut();
                 }
-                LoginFragment.logging_out(getContext());
+                LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
 
@@ -79,16 +78,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         Intent intent = new Intent(getContext(), Message.class);
         Button b = (Button)v;
         intent.putExtra("chatinitial", b.getText().toString());
-        switch (v.getId()) {
-            case R.id.btn_people1:
-                intent.putExtra("chatname", "Gardiola");
-                break;
-            case R.id.btn_people2:
-                intent.putExtra("chatname", "Garcia");
-                break;
-            case R.id.btn_people3:
-                intent.putExtra("chatname", "Pascua");
-                break;
+        if (v.getId() == R.id.btn_people1) {
+            intent.putExtra("chatname", "Gardiola");
+        } else if (v.getId() == R.id.btn_people2) {
+            intent.putExtra("chatname", "Garcia");
+        } else if (v.getId() == R.id.btn_people3) {
+            intent.putExtra("chatname", "Pascua");
         }
         getContext().startActivity(intent);
     }

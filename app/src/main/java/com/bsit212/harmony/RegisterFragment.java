@@ -71,8 +71,7 @@ public class RegisterFragment extends Fragment {
                     if (etUsername.getText().toString() != null || etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
                         MainActivity mainActivity = (MainActivity) getActivity();
                         if (mainActivity != null) {
-                            mainActivity.register(etUsername.getText().toString(), etPassword.getText().toString(),etEmail.getText().toString());
-                            Log.i("yowell","Register() Done");
+                            mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etPassword.getText()));
                         }
                     }
                 } catch(Exception e) {
@@ -85,13 +84,10 @@ public class RegisterFragment extends Fragment {
         tvLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://subscribe.linphone.org/register/email"));
-//                startActivity(browserIntent);
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
-                    mainActivity.launchFragment_login();
+                    mainActivity.launchFragment("login");
                 }
-//                bg.delete();
             }
         });
 
