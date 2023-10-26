@@ -1,7 +1,5 @@
 package com.bsit212.harmony;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -9,7 +7,6 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,26 +15,42 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Use the {@link RegisterFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class RegisterFragment extends Fragment {
 
     static LinearLayout linearLayout;
-
     static EditText etEmail;
     static EditText etPassword;
     static TextInputLayout tilShowPassword;
     static TextView tvLogin;
     static Button btnRegister;
-
     static ImageView autoSet;
+
+    public void onClick(View v){
+        if (v.getId() == R.id.imageView4){
+            etEmail.setText("angeltidon18@yahoo.com");
+            etPassword.setText("angelt");
+        } else if (v.getId() == R.id.register_btn_register) {
+            if (etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etPassword.getText()));
+                }
+            }
+        } else if (v.getId() == R.id.register_tv_login) {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.launchFragment(MainActivity.launchFragment.login);
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,41 +65,9 @@ public class RegisterFragment extends Fragment {
         autoSet = view.findViewById(R.id.imageView4);
         etEmail.addTextChangedListener(register_textWatcher);
         etPassword.addTextChangedListener(register_textWatcher);
-
-        autoSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etEmail.setText("angeltidon18@yahoo.com");
-                etPassword.setText("angelt");
-            }
-        });
-
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    if (etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        if (mainActivity != null) {
-                            mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etPassword.getText()));
-                        }
-                    }
-                } catch(Exception e) {
-                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    Log.i("yowell",e.toString());
-                }
-            }
-        });
-
-        tvLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null) {
-                    mainActivity.launchFragment(MainActivity.launchFragment.login);
-                }
-            }
-        });
+        autoSet.setOnClickListener(this::onClick);
+        btnRegister.setOnClickListener(this::onClick);
+        tvLogin.setOnClickListener(this::onClick);
 
         return view;
     }
@@ -158,6 +139,10 @@ public class RegisterFragment extends Fragment {
                 btnRegister.setEnabled(false);
                 break;
         }
+    }
+
+    public RegisterFragment() {
+        // Required empty public constructor
     }
 
 //    // TODO: Rename parameter arguments, choose names that match
