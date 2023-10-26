@@ -44,10 +44,9 @@ repositories {
 
 dependencies {
 
-//    debugImplementation "org.linphone:linphone-sdk-android-debug:5.1+"
-//    releaseImplementation "org.linphone:linphone-sdk-android:5.1+"
+    classpath 'com.google.gms:google-services:4.0.0'
     implementation platform('com.google.firebase:firebase-bom:32.4.0')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
@@ -57,3 +56,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
 }
+
+apply plugin: 'com.google.gms.google-services'

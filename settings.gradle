@@ -3,20 +3,19 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-//        google()
-//        mavenCentral()
-//        maven {
-//            name "linphone.org maven repository"
-//            url "https://linphone.org/maven_repository/"
-//            content {
-//                includeGroup "org.linphone"
-//            }
-//        }
+        google()
+        mavenCentral()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 rootProject.name = "Harmony"
