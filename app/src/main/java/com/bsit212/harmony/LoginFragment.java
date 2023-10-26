@@ -61,7 +61,7 @@ public class LoginFragment extends Fragment{
         } else if (v.getId() == R.id.login_tv_register) {
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {
-                mainActivity.launchFragment("register");
+                mainActivity.launchFragment(MainActivity.launchFragment.register);
             }
         }
     }

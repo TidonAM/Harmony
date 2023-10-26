@@ -5,6 +5,7 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,35 +26,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        launchFragment("login");
+        launchFragment(launchFragment.login);
 
     }
 
-    public void launchFragment(String i){
+    public enum launchFragment{
+        login,
+        contacts,
+        message,
+        register,
+        call
+    }
+
+    public void launchFragment(launchFragment launchFragment){
         int bg = 0;
-        switch(i){
-            case "login":
+        switch(launchFragment){
+            case login:
                 LoginFragment lg = new LoginFragment();
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                         .replace(R.id.fl_main,lg).commit();
                 setBackground(1);
                 break;
-            case "contacts":
+            case contacts:
                 ContactsFragment ct = new ContactsFragment();
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                         .replace(R.id.fl_main,ct).commit();
                 setBackground(1);
                 break;
-            case "message":
+            case message:
                 MessageFragment ms = new MessageFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,ms).commit();
                 setBackground(1);
                 break;
-            case "register":
+            case register:
                 RegisterFragment fr = new RegisterFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,fr).commit();
+                setBackground(1);
+                break;
+            case call:
+                CallFragment cl = new CallFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,cl).commit();
                 setBackground(1);
                 break;
         }
@@ -86,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             LoginFragment.login_changeUI(LoginFragment.LoginState.in_success,MainActivity.this);
-                            launchFragment("contacts");
+                            launchFragment(launchFragment.contacts);
                             isLoggedIn = true;
                         } else {
                             // If sign in fails, display a message to the user.
@@ -107,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            launchFragment("login");
+                            launchFragment(launchFragment.login);
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(MainActivity.this, "Authentication failed.",
@@ -119,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
-        launchFragment("login");
+        launchFragment(launchFragment.login);
     }
 
     @Override
@@ -128,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            launchFragment("contacts");
+            launchFragment(launchFragment.contacts);
             isLoggedIn = true;
         }
     }

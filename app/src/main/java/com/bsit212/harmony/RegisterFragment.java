@@ -32,7 +32,6 @@ public class RegisterFragment extends Fragment {
     static LinearLayout linearLayout;
 
     static EditText etEmail;
-    static EditText etUsername;
     static EditText etPassword;
     static TextInputLayout tilShowPassword;
     static TextView tvLogin;
@@ -46,20 +45,18 @@ public class RegisterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_register,container,false);
         linearLayout = view.findViewById(R.id.register_layout_main);
         etEmail = view.findViewById(R.id.register_et_email);
-        etUsername = view.findViewById(R.id.register_et_username);
         etPassword = view.findViewById(R.id.register_et_password);
         tilShowPassword = view.findViewById(R.id.register_til_password);
         tvLogin = view.findViewById(R.id.register_tv_login);
         btnRegister = view.findViewById(R.id.register_btn_register);
         autoSet = view.findViewById(R.id.imageView4);
-        etUsername.addTextChangedListener(register_textWatcher);
+        etEmail.addTextChangedListener(register_textWatcher);
         etPassword.addTextChangedListener(register_textWatcher);
 
         autoSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 etEmail.setText("angeltidon18@yahoo.com");
-                etUsername.setText("angelt");
                 etPassword.setText("angelt");
             }
         });
@@ -68,7 +65,7 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    if (etUsername.getText().toString() != null || etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
+                    if (etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
                         MainActivity mainActivity = (MainActivity) getActivity();
                         if (mainActivity != null) {
                             mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etPassword.getText()));
@@ -86,7 +83,7 @@ public class RegisterFragment extends Fragment {
             public void onClick(View view) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
-                    mainActivity.launchFragment("login");
+                    mainActivity.launchFragment(MainActivity.launchFragment.login);
                 }
             }
         });
@@ -99,12 +96,12 @@ public class RegisterFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String stringEtPassword = etPassword.getText().toString();
-            String stringEtUsername = etUsername.getText().toString();
             String stringEtEmail = etEmail.getText().toString();
-            if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2 || stringEtEmail.length() < 2 ) {
-                btnRegisterDisabled(getContext());
+            if (stringEtPassword.length() < 2 || stringEtEmail.length() < 2 ) {
+                register_changeUI(RegisterState.btnDisable,getContext());
+
             } else {
-                btnRegisterEnable(getContext());
+                register_changeUI(RegisterState.btnEnable,getContext());
             }
         }
 
@@ -116,83 +113,91 @@ public class RegisterFragment extends Fragment {
         }
     };
 
-    public static void register_ongoing(android.content.Context context) {
-        btnRegister.setText("Registering");
-        btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
-        btnRegister.setEnabled(false);
-        etUsername.setEnabled(false);
-        etPassword.setEnabled(false);
-        tilShowPassword.setEnabled(false);
+    public enum RegisterState {
+        in_ongoing,
+        in_incorrect,
+        in_success,
+        btnEnable,
+        btnDisable
     }
 
-    public static void register_fail(android.content.Context context) {
-        btnRegister.setText("Incorrect Credentials! Try Again");
-        btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Red));
-        btnRegister.setEnabled(false);
-        etUsername.setEnabled(true);
-        etPassword.setEnabled(true);
-        tilShowPassword.setEnabled(true);
-    }
-
-    public static void register_success(android.content.Context context) {
-        btnRegister.setText("Register");
-        btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnRegister.setEnabled(true);
-        etPassword.setEnabled(true);
-        etUsername.setEnabled(true);
-        tilShowPassword.setEnabled(true);
-    }
-
-    public static void btnRegisterEnable(android.content.Context context){
-        btnRegister.setText("Register");
-        btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
-        btnRegister.setEnabled(true);
-    }
-
-    public static void btnRegisterDisabled(android.content.Context context){
-        btnRegister.setText("Register");
-        btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
-        btnRegister.setEnabled(false);
-    }
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public RegisterFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public static void register_changeUI(RegisterState state, android.content.Context context){
+        switch (state) {
+            case in_ongoing:
+                btnRegister.setText("Registering");
+                btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Green));
+                btnRegister.setEnabled(false);
+                etEmail.setEnabled(false);
+                etPassword.setEnabled(false);
+                tilShowPassword.setEnabled(false);
+                break;
+            case in_incorrect:
+                btnRegister.setText("Unable to Register");
+                btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Red));
+                btnRegister.setEnabled(false);
+                etEmail.setEnabled(true);
+                etPassword.setEnabled(true);
+                tilShowPassword.setEnabled(true);
+                break;
+            case in_success:
+                btnRegister.setText("Register");
+                btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+                btnRegister.setEnabled(true);
+                etPassword.setEnabled(true);
+                etEmail.setEnabled(true);
+                tilShowPassword.setEnabled(true);
+                break;
+            case btnEnable:
+                btnRegister.setText("Register");
+                btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.BlueCornflower));
+                btnRegister.setEnabled(true);
+                break;
+            case btnDisable:
+                btnRegister.setText("Register");
+                btnRegister.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.Gray));
+                btnRegister.setEnabled(false);
+                break;
         }
     }
+
+//    // TODO: Rename parameter arguments, choose names that match
+//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+//    private static final String ARG_PARAM1 = "param1";
+//    private static final String ARG_PARAM2 = "param2";
+//
+//    // TODO: Rename and change types of parameters
+//    private String mParam1;
+//    private String mParam2;
+//
+//    public RegisterFragment() {
+//        // Required empty public constructor
+//    }
+//
+//    /**
+//     * Use this factory method to create a new instance of
+//     * this fragment using the provided parameters.
+//     *
+//     * @param param1 Parameter 1.
+//     * @param param2 Parameter 2.
+//     * @return A new instance of fragment RegisterFragment.
+//     */
+//    // TODO: Rename and change types and number of parameters
+//    public static RegisterFragment newInstance(String param1, String param2) {
+//        RegisterFragment fragment = new RegisterFragment();
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
+//
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
+//    }
 
 }
