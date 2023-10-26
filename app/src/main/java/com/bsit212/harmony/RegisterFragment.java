@@ -27,6 +27,7 @@ public class RegisterFragment extends Fragment {
 
     static LinearLayout linearLayout;
     static EditText etEmail;
+    static EditText etUsername;
     static EditText etPassword;
     static TextInputLayout tilShowPassword;
     static TextView tvLogin;
@@ -41,7 +42,7 @@ public class RegisterFragment extends Fragment {
             if (etPassword.getText().toString() != null || etEmail.getText().toString() != null) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
-                    mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etPassword.getText()));
+                    mainActivity.register(String.valueOf(etEmail.getText()), String.valueOf(etUsername.getText()), String.valueOf(etPassword.getText()));
                 }
             }
         } else if (v.getId() == R.id.register_tv_login) {
@@ -58,13 +59,17 @@ public class RegisterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_register,container,false);
         linearLayout = view.findViewById(R.id.register_layout_main);
         etEmail = view.findViewById(R.id.register_et_email);
+        etUsername = view.findViewById(R.id.register_et_username);
         etPassword = view.findViewById(R.id.register_et_password);
         tilShowPassword = view.findViewById(R.id.register_til_password);
         tvLogin = view.findViewById(R.id.register_tv_login);
         btnRegister = view.findViewById(R.id.register_btn_register);
         autoSet = view.findViewById(R.id.imageView4);
+
         etEmail.addTextChangedListener(register_textWatcher);
+        etUsername.addTextChangedListener(register_textWatcher);
         etPassword.addTextChangedListener(register_textWatcher);
+
         autoSet.setOnClickListener(this::onClick);
         btnRegister.setOnClickListener(this::onClick);
         tvLogin.setOnClickListener(this::onClick);

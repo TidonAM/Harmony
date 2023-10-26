@@ -75,9 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case call:
                 CallFragment cl = new CallFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                        .replace(R.id.fl_main,cl).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,cl).commit();
                 setBackground(1);
                 break;
         }
@@ -151,10 +149,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void ContactstoMessage(){
         launchFragment(launchFragment.message);
-    }
-
-    public void MessagetoCall(){
-        launchFragment(launchFragment.call);
     }
 
     @Override
