@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case message:
                 MessageFragment ms = new MessageFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fl_main,ms).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .replace(R.id.fl_main,ms).commit();
                 setBackground(1);
                 break;
             case register:
