@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +20,7 @@ import android.widget.TextView;
  * Use the {@link ContactsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactsFragment extends Fragment implements View.OnClickListener {
+public class ContactsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,9 +50,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         Button btnpeople1 = view.findViewById(R.id.btn_people1);
         Button btnpeople2 = view.findViewById(R.id.btn_people2);
         Button btnpeople3 = view.findViewById(R.id.btn_people3);
-        btnpeople1.setOnClickListener(this);
-        btnpeople2.setOnClickListener(this);
-        btnpeople3.setOnClickListener(this);
 
         if (MainActivity.isLoggedIn == true) {
             imLogout.setEnabled(true);
@@ -69,24 +67,40 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                 LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
+        btnpeople1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.ContactstoMessage();
+                }
+            }
+        });
+        btnpeople2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.ContactstoMessage();
+                }
+            }
+        });
+        btnpeople3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.ContactstoMessage();
+                }
+            }
+        });
 
         return view;
-
     }
 
-    public void onClick(View v) {
-        Intent intent = new Intent(getContext(), Message.class);
-        Button b = (Button)v;
-        intent.putExtra("chatinitial", b.getText().toString());
-        if (v.getId() == R.id.btn_people1) {
-            intent.putExtra("chatname", "Gardiola");
-        } else if (v.getId() == R.id.btn_people2) {
-            intent.putExtra("chatname", "Garcia");
-        } else if (v.getId() == R.id.btn_people3) {
-            intent.putExtra("chatname", "Pascua");
-        }
-        getContext().startActivity(intent);
-    }
+
+
+
 
     /**
      * Use this factory method to create a new instance of

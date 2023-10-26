@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     private void setBackground(int bg){
         switch(bg){
             case 1:
@@ -143,6 +145,10 @@ public class MainActivity extends AppCompatActivity {
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         launchFragment(launchFragment.login);
+    }
+
+    public void ContactstoMessage(){
+        launchFragment(launchFragment.message);
     }
 
     @Override
