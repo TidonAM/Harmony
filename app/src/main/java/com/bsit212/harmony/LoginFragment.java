@@ -88,7 +88,7 @@ public class LoginFragment extends Fragment {
                     if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
                         MainActivity mainActivity = (MainActivity) getActivity();
                         if (mainActivity != null) {
-                            mainActivity.login(etUsername.getText().toString(), etPassword.getText().toString());
+                            mainActivity.login();
                         }
                     }
                 } catch(Exception e) {
