@@ -12,10 +12,10 @@ public class call extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
-        Intent intent = getIntent();
-        String stringUsername = intent.getStringExtra("chatname");
-        TextView tv_username = findViewById(R.id.call_tv_username);
-        tv_username.setText(stringUsername);
+//        Intent intent = getIntent();
+//        String stringUsername = intent.getStringExtra("chatname");
+//        TextView tv_username = findViewById(R.id.call_tv_username);
+//        tv_username.setText(stringUsername);
 
     }
 }
