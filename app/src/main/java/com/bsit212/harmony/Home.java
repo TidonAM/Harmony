@@ -1,7 +1,5 @@
 package com.bsit212.harmony;
 
-import static com.bsit212.harmony.background.core;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,18 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.linphone.core.Account;
-import org.linphone.core.AccountParams;
-import org.linphone.core.Core;
-
-import java.io.Serializable;
-
 public class Home extends AppCompatActivity implements View.OnClickListener {
-
-    Core home_core;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
