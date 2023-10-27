@@ -130,7 +130,7 @@
                         android:fontFamily="sans-serif-black"
                         android:text="Already have an account?"
                         android:textColor="@color/DarkGray"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:layout_weight="1"/>
 
                     <TextView
@@ -140,7 +140,7 @@
                         android:fontFamily="sans-serif-black"
                         android:text="Log in here"
                         android:textColor="@color/BlueCornflower"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:clickable="true"
                         android:gravity="" />
                 </LinearLayout>

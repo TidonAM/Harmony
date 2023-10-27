@@ -37,6 +37,7 @@ public class RegisterFragment extends Fragment {
     public void onClick(View v){
         if (v.getId() == R.id.imageView4){
             etEmail.setText("angeltidon18@yahoo.com");
+            etUsername.setText("angelt");
             etPassword.setText("angelt");
         } else if (v.getId() == R.id.register_btn_register) {
             if (etPassword.getText().toString() != null || etEmail.getText().toString() != null) {

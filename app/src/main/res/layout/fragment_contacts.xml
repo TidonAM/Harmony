@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ContactsFragment">
 
     <LinearLayout
         android:id="@+id/contacts_layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_cloud"
         android:orientation="vertical"
         android:visibility="visible">
 
@@ -57,7 +57,7 @@
                 android:layout_weight="20"
 
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="40dp"
+                app:cardCornerRadius="50dp"
                 app:cardElevation="20dp">
 
                 <LinearLayout
@@ -137,14 +137,15 @@
                             android:id="@+id/btn_people1"
                             android:layout_width="50dp"
                             android:layout_height="wrap_content"
-                            android:text="G"
+                            android:text="A"
                             app:cornerRadius="30dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Gardiola"
-                            android:textColor="@color/Gray" />
+                            android:labelFor="@id/btn_people1"
+                            android:text="April123"
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -168,7 +169,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Garcia"
-                            android:textColor="@color/Gray" />
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -192,7 +193,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pascua"
-                            android:textColor="@color/Gray" />
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -207,20 +208,15 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="20dp"
+
             android:background="@drawable/custome_roundcorners_blue"
             android:backgroundTint="@color/BlueFadingNight"
             android:paddingRight="5dp"
-            android:src="@drawable/dr_icon_logout" />
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="30dp"
+            android:src="@drawable/dr_icon_logout"
+            android:layout_alignParentBottom="true"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-
-    </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>
