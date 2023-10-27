@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".LoginFragment">
 
     <LinearLayout
@@ -42,7 +42,7 @@
                     android:layout_marginTop="40dp"
                     android:background="@drawable/custom_edittext"
                     android:ems="10"
-                    android:hint="Email or Username"
+                    android:hint="Email"
                     android:inputType="textPersonName"
                     android:nextFocusDown="@id/login_et_password"
                     android:padding="8dp"
@@ -96,7 +96,7 @@
                     android:layout_gravity="center"
                     android:text="Forgot Password?"
                     android:textColor="@color/BlueCornflower"
-                    android:textSize="12sp" />
+                    android:textSize="15sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/login_btn_login"
@@ -124,7 +124,7 @@
                         android:fontFamily="sans-serif-black"
                         android:text="Don't have an account?"
                         android:textColor="@color/DarkGray"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:layout_weight="1"/>
 
                     <TextView
@@ -134,7 +134,7 @@
                         android:fontFamily="sans-serif-black"
                         android:text="Register here"
                         android:textColor="@color/BlueCornflower"
-                        android:textSize="12sp"
+                        android:textSize="15sp"
                         android:clickable="true"
                         android:gravity="" />
                 </LinearLayout>

@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +35,13 @@ public class ContactsFragment extends Fragment {
     static TextView tvUsername;
     static ImageButton imLogout;
 
+    public static Button btnpeople1;
+    public static Button btnpeople2;
+    public static Button btnpeople3;
+
     public ContactsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,9 +51,18 @@ public class ContactsFragment extends Fragment {
 
         tvUsername = view.findViewById(R.id.home_tv_username);
         imLogout = view.findViewById(R.id.home_ib_logout);
-        Button btnpeople1 = view.findViewById(R.id.btn_people1);
-        Button btnpeople2 = view.findViewById(R.id.btn_people2);
-        Button btnpeople3 = view.findViewById(R.id.btn_people3);
+        btnpeople1 = view.findViewById(R.id.btn_people1);
+        btnpeople2 = view.findViewById(R.id.btn_people2);
+        btnpeople3 = view.findViewById(R.id.btn_people3);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+        if (mainActivity.currentUsername != null) {
+            tvUsername.setText(mainActivity.currentUsername);
+        } else {
+            Log.i("yowell","signingout");
+            mainActivity.signOut();
+        }
 
         if (MainActivity.isLoggedIn == true) {
             imLogout.setEnabled(true);

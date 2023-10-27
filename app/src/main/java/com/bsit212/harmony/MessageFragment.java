@@ -12,7 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +29,8 @@ public class MessageFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    TextView tvUsername;
+
     int counter = 0;
 
     @Override
@@ -36,6 +41,10 @@ public class MessageFragment extends Fragment {
 
 //        Intent intent = view.getIntent();
 //        String stringUsername = intent.getStringExtra("chatname");
+
+        tvUsername = view.findViewById(R.id.message_tv_username);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        tvUsername.setText(mainActivity.currentUsername);
 
         EditText etType = view.findViewById(R.id.et_type);
         List<String> items = new LinkedList<>();
@@ -61,7 +70,6 @@ public class MessageFragment extends Fragment {
         });
 
         view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
-            MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {
                 mainActivity.MessagetoCall();
             }
