@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -60,26 +61,19 @@ public class MessageFragment extends Fragment {
         });
 
         view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
-//            Intent intent2 = new Intent(getContext(), call.class);
-//            intent2.putExtra("chatname", stringUsername);
-//            getContext().startActivity(intent2);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.MessagetoCall();
+            }
         });
 
         return view;
     }
 
     public MessageFragment() {
-        // Required empty public constructor
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MessageFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static MessageFragment newInstance(String param1, String param2) {
         MessageFragment fragment = new MessageFragment();
