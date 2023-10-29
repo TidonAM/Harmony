@@ -124,37 +124,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getCurrentToken() {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-//                        String msg = getString(R.string.msg_token_fmt, token);
-//                        Log.d(TAG, msg);
-//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-//    @Override
-//    public void onNewToken(@NonNull String token) {
-//        Log.d(TAG, "Refreshed token: " + token);
-//
-//        // If you want to send messages to this application instance or
-//        // manage this apps subscriptions on the server side, send the
-//        // FCM registration token to your app server.
-//        sendRegistrationToServer(token);
-//    }
-
     public void login(String email, String password){
         LoginFragment.login_changeUI(LoginFragment.LoginState.in_ongoing, this);
         mAuth.signInWithEmailAndPassword(email, password)
@@ -203,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user1 = mAuth.getCurrentUser();
                             Map<String, Object> user = new HashMap<>();
                             user.put("username", username);
+                            user.put("email", email);
                             db.collection("users")
                                     .document(FirebaseAuth.getInstance().getUid())
                                     .set(user)
@@ -233,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         launchFragment(launchFragment.login);
+        LoginFragment.login_changeUI(LoginFragment.LoginState.out_success, this);
     }
 
     public void ContactstoMessage(){
@@ -251,33 +222,7 @@ public class MainActivity extends AppCompatActivity {
         TextView one = findViewById(ContactsFragment.btnpeople1.getLabelFor());
         Query query = getAllUsers()
                 .whereGreaterThanOrEqualTo("username",one.getText().toString());
-    }
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // FCM SDK (and your app) can post notifications.
-                } else {
-                    // TODO: Inform user that that your app will not show notifications.
-                }
-            });
-
-    private void askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
     }
 
     void Chatroom(String user2Uid) {
