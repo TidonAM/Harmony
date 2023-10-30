@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -38,6 +44,9 @@ public class ContactsFragment extends Fragment {
     public static Button btnpeople1;
     public static Button btnpeople2;
     public static Button btnpeople3;
+    static RecyclerView recyclerView;
+
+    static ContactsRecyclerView contactsRecyclerView;
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -49,13 +58,20 @@ public class ContactsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts,container,false);
 
+        List<ItemData> items = new ArrayList<>();
+
         tvUsername = view.findViewById(R.id.home_tv_username);
         imLogout = view.findViewById(R.id.home_ib_logout);
-        btnpeople1 = view.findViewById(R.id.btn_people1);
-        btnpeople2 = view.findViewById(R.id.btn_people2);
-        btnpeople3 = view.findViewById(R.id.btn_people3);
-
+//        btnpeople1 = view.findViewById(R.id.btn_people1);
+//        btnpeople2 = view.findViewById(R.id.btn_people2);
+//        btnpeople3 = view.findViewById(R.id.btn_people3);
         MainActivity mainActivity = (MainActivity) getActivity();
+
+        recyclerView = view.findViewById(R.id.contacts_recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mainActivity.fetchContacts();
+        recyclerView.setAdapter(contactsRecyclerView);
+
 
         if (mainActivity.currentUsername != null) {
             tvUsername.setText(mainActivity.currentUsername);
@@ -80,40 +96,36 @@ public class ContactsFragment extends Fragment {
                 LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
-        btnpeople1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null) {
-                    mainActivity.ContactstoMessage();
-                }
-            }
-        });
-        btnpeople2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null) {
-                    mainActivity.ContactstoMessage();
-                }
-            }
-        });
-        btnpeople3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity mainActivity = (MainActivity) getActivity();
-                if (mainActivity != null) {
-                    mainActivity.ContactstoMessage();
-                }
-            }
-        });
+//        btnpeople1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MainActivity mainActivity = (MainActivity) getActivity();
+//                if (mainActivity != null) {
+//                    mainActivity.ContactstoMessage();
+//                }
+//            }
+//        });
+//        btnpeople2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MainActivity mainActivity = (MainActivity) getActivity();
+//                if (mainActivity != null) {
+//                    mainActivity.ContactstoMessage();
+//                }
+//            }
+//        });
+//        btnpeople3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                MainActivity mainActivity = (MainActivity) getActivity();
+//                if (mainActivity != null) {
+//                    mainActivity.ContactstoMessage();
+//                }
+//            }
+//        });
 
         return view;
     }
-
-
-
-
 
     /**
      * Use this factory method to create a new instance of

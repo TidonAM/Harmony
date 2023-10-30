@@ -36,18 +36,25 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     public static boolean isLoggedIn = false;
-
     private FirebaseAuth mAuth;
     public String currentUsername;
     FirebaseFirestore db;
-
     private long lastBackPressTime = 0;
+    public enum launchFragment{
+        login,
+        contacts,
+        message,
+        register,
+        call
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +64,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         launchFragment(launchFragment.login);
 
-    }
-
-    public enum launchFragment{
-        login,
-        contacts,
-        message,
-        register,
-        call
     }
 
     public void launchFragment(launchFragment launchFragment){
@@ -214,15 +213,8 @@ public class MainActivity extends AppCompatActivity {
         launchFragment(launchFragment.call);
     }
 
-    public CollectionReference getAllUsers(){
+    public static CollectionReference getAllUsers(){
         return FirebaseFirestore.getInstance().collection("users");
-    }
-
-    public void setup() {
-        TextView one = findViewById(ContactsFragment.btnpeople1.getLabelFor());
-        Query query = getAllUsers()
-                .whereGreaterThanOrEqualTo("username",one.getText().toString());
-
     }
 
     void Chatroom(String user2Uid) {
@@ -232,6 +224,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         getChatroomId(mAuth.getCurrentUser().getUid().toString(),user2Uid);
+
+    }
+
+    public void fetchContacts(){
+        Log.i("yowell","fetchContacts()");
+        DocumentReference userDocumentRef = getAllUsers().document(FirebaseAuth.getInstance().getUid());
+        CollectionReference contactsCollection = userDocumentRef.collection("contacts");
+        Query allContactsQuery = contactsCollection;
+
+        // Add a listener to retrieve all contacts
+        allContactsQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.i("yowell","fetchContacts(): task Successful");
+                QuerySnapshot querySnapshot = task.getResult();
+                List<ItemData> allContacts = new ArrayList<>();
+                ContactsFragment.contactsRecyclerView = new ContactsRecyclerView(allContacts);
+
+                for (QueryDocumentSnapshot document : querySnapshot) {
+                    Log.i("yowell","fetchContacts(): for loop commenced");
+
+                    Map<String, Object> contactData = document.getData();
+                    Object username = contactData.get("username");
+                    Object email = contactData.get("email");
+
+                    if (username != null) {
+                        String usernameStr = username.toString();
+                        String emailStr = email.toString();
+
+                        // Create an ItemData object or update your existing data structure
+                        ItemData item = new ItemData(usernameStr,emailStr);
+                        allContacts.add(item);
+                        Log.i("yowell","     "+usernameStr+" "+emailStr);
+                        ContactsFragment.contactsRecyclerView.notifyItemInserted(allContacts.size()-1);
+                    } else {
+                        Log.i("yowell","fetchContacts(): username is null");
+                    }
+                }
+                Log.i("yowell","allContacts.toString(): "+allContacts.toString());
+
+
+            } else {
+                Log.i("yowell","fetchContacts(): task Failed");
+                Log.w(TAG, "Error getting documents.", task.getException());
+            }
+        });
 
     }
 

@@ -39,9 +39,6 @@ public class MessageFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_message,container,false);
 
-//        Intent intent = view.getIntent();
-//        String stringUsername = intent.getStringExtra("chatname");
-
         tvUsername = view.findViewById(R.id.message_tv_username);
         MainActivity mainActivity = (MainActivity) getActivity();
         tvUsername.setText(mainActivity.currentUsername);
@@ -49,7 +46,7 @@ public class MessageFragment extends Fragment {
         EditText etType = view.findViewById(R.id.et_type);
         List<String> items = new LinkedList<>();
 
-        RecyclerView recyclerView = view.findViewById(R.id.RecyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.message_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ChatRecyclerView chatRecyclerView = new ChatRecyclerView(items);
         recyclerView.setAdapter(chatRecyclerView);
