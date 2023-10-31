@@ -40,8 +40,12 @@ public class MessageFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_message,container,false);
 
-        tvUsername = view.findViewById(R.id.message_tv_username);
         MainActivity mainActivity = (MainActivity) getActivity();
+
+        int statusBarHeight = mainActivity.getStatusBarHeight();
+        View layout = view.findViewById(R.id.toolbar); // Replace with your layout's ID
+        layout.setPadding(20, statusBarHeight+40, 0, 30);
+        tvUsername = view.findViewById(R.id.message_tv_username);
         otherUsername = mainActivity.otherUsername;
         if (otherUsername == null) {
             Toast.makeText(getActivity(),"Invalid Username",Toast.LENGTH_SHORT);
@@ -73,11 +77,11 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
-            if (mainActivity != null) {
-                mainActivity.MessagetoCall();
-            }
-        });
+//        view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
+//            if (mainActivity != null) {
+//                mainActivity.MessagetoCall();
+//            }
+//        });
 
         return view;
     }

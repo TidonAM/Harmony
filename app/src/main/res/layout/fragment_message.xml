@@ -1,99 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".Message"
-    >
+    android:fillViewport="true"
+    tools:context=".Message">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:background="@color/BlueFadingNight"
-            android:padding="10dp"
-            android:id="@+id/toolbar">
+            android:paddingStart="10dp"
+            android:paddingTop="10sp"
+            android:paddingBottom="10dp"
+            android:layout_weight="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/custom_circle"
+                android:backgroundTint="@color/white" />
 
             <TextView
                 android:id="@+id/message_tv_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:layout_toRightOf="@+id/btn_back"
                 android:text="Username"
                 android:textColor="@color/white"
                 android:textSize="30sp"
-                android:textStyle="bold"
-                android:layout_marginStart="15dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/btn_back"/>
-            <ImageButton
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginLeft="5dp"
-                android:background="@drawable/custom_circle"
-                android:backgroundTint="@color/white"
-                android:layout_centerVertical="true"
-                android:id="@+id/btn_back"/>
-
-        </RelativeLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar"
-            android:layout_above="@+id/linearlayout"
-            android:layout_alignParentTop="true"
-            android:paddingBottom="10dp"
-            android:paddingTop="70dp"
-            tools:itemCount="50" />
-
-        <LinearLayout
-            android:id="@+id/linearlayout"
-            android:background="@drawable/custom_roundcorners_toponly"
-            android:backgroundTint="@color/BlueCornflower"
-            android:layout_alignParentBottom="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="100">
-
-            <ImageView
-                android:id="@+id/img_call"
-                android:layout_width="50dp"
-                android:layout_height="70dp"
-                android:layout_weight="10"
-                android:clickable="true"
-                android:src="@drawable/icon_call" />
-
-            <EditText
-                android:id="@+id/et_type"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_weight="80"
-                android:background="@drawable/custom_roundcorners"
-                android:backgroundTint="@color/white"
-                android:elevation="10dp"
-                android:hint="Type here"
-                android:paddingStart="20dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/Gray" />
-
-            <ImageView
-                android:id="@+id/img_send"
-                android:layout_width="50dp"
-                android:layout_height="70dp"
-                android:layout_weight="10"
-                android:clickable="true"
-                android:src="@drawable/icon_send" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-    </RelativeLayout>
-    
-</RelativeLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="98"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/message_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="100"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearlayout"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="20" />
+
+            <LinearLayout
+                android:id="@+id/linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/custom_roundcorners_toponly"
+                android:backgroundTint="@color/BlueCornflower"
+                android:isScrollContainer="true"
+                android:orientation="horizontal"
+                android:weightSum="100"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/img_call"
+                    android:layout_width="50dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="10"
+                    android:layout_marginStart="10dp"
+                    android:clickable="true"
+                    android:src="@drawable/icon_call" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_weight="80"
+                    android:layout_height="match_parent">
+                    <EditText
+                        android:id="@+id/et_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:backgroundTint="@color/white"
+                        android:elevation="10dp"
+                        android:hint="Type here"
+                        android:paddingStart="20dp"
+                        android:paddingBottom="40dp"
+                        android:layout_marginBottom="-30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/Gray" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        app:cardCornerRadius="30dp">
+
+                    </androidx.cardview.widget.CardView>
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/img_send"
+                    android:layout_width="50dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="10"
+                    android:clickable="true"
+                    android:src="@drawable/icon_send"
+                    android:layout_marginEnd="10dp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+
+
+</ScrollView>

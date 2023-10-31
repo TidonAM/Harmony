@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
         call
     }
 
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         launchFragment(launchFragment.login);
-
     }
 
     public void launchFragment(launchFragment launchFragment){
@@ -87,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             case message:
                 MessageFragment ms = new MessageFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom)
+                        .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_in_top)
                         .replace(R.id.fl_main,ms).commit();
                 setBackground(1);
                 break;
