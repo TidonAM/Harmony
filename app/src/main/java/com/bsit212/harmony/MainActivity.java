@@ -73,28 +73,28 @@ public class MainActivity extends AppCompatActivity {
             case login:
                 LoginFragment lg = new LoginFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.fl_main,lg).commit();
                 setBackground(1);
                 break;
             case contacts:
                 ContactsFragment ct = new ContactsFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_from_left)
                         .replace(R.id.fl_main,ct).commit();
                 setBackground(1);
                 break;
             case message:
                 MessageFragment ms = new MessageFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom)
                         .replace(R.id.fl_main,ms).commit();
                 setBackground(1);
                 break;
             case register:
                 RegisterFragment fr = new RegisterFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .setCustomAnimations(android.R.anim.fade_in, R.anim.fade_out)
                         .replace(R.id.fl_main,fr).commit();
                 setBackground(1);
                 break;
@@ -236,15 +236,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("yowell","fetchContacts()");
         DocumentReference userDocumentRef = getAllUsers().document(FirebaseAuth.getInstance().getUid());
         CollectionReference contactsCollection = userDocumentRef.collection("contacts");
-        Query allContactsQuery;
-
-        if (search != null) {
-            allContactsQuery = contactsCollection.whereEqualTo("username", search);
-            Log.i("yowell","fetchContacts(): search is not null, "+ search);
-        } else {
-            allContactsQuery = contactsCollection;
-            Log.i("yowell","fetchContacts(): search is null");
-        }
+        Query allContactsQuery = contactsCollection;
 
         // Add a listener to retrieve all contacts
         allContactsQuery.get().addOnCompleteListener(task -> {
@@ -265,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
                         String usernameStr = username.toString();
                         String emailStr = email.toString();
 
-                        if (search == null || usernameStr.contains(search)) {
+                        if (search == null || usernameStr.toLowerCase().contains(search.toLowerCase())) {
                             // Create an ItemData object or update your existing data structure
                             ItemData item = new ItemData(usernameStr, emailStr);
                             allContacts.add(item);
