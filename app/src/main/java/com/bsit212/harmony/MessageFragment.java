@@ -28,6 +28,7 @@ public class MessageFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String otherUsername;
 
     TextView tvUsername;
 
@@ -41,7 +42,13 @@ public class MessageFragment extends Fragment {
 
         tvUsername = view.findViewById(R.id.message_tv_username);
         MainActivity mainActivity = (MainActivity) getActivity();
-        tvUsername.setText(mainActivity.currentUsername);
+        otherUsername = mainActivity.otherUsername;
+        if (otherUsername == null) {
+            Toast.makeText(getActivity(),"Invalid Username",Toast.LENGTH_SHORT);
+            mainActivity.launchFragment(MainActivity.launchFragment.contacts);
+        } else {
+            tvUsername.setText(otherUsername);
+        }
 
         EditText etType = view.findViewById(R.id.et_type);
         List<String> items = new LinkedList<>();

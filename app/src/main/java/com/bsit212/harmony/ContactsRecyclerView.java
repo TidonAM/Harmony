@@ -1,5 +1,6 @@
 package com.bsit212.harmony;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
-
     List<ItemData> items;
+    private OnItemClickListener clickListener;
 
     public ContactsRecyclerView(List<ItemData> items) {
         this.items = items;
@@ -22,11 +23,15 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
     public ContactsVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.search_recylcerrow, parent, false);
-        return new ContactsVH(view).linkAdapter(this);
+        return new ContactsVH(view,clickListener).linkAdapter(this);
     }
 
-    public void setItems(List<ItemData> items) {
-        this.items = items;
+    public interface OnItemClickListener {
+        void onItemClick(int position, String toptext, String bottomtext);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.clickListener = listener;
     }
 
     @Override
@@ -36,24 +41,42 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
         // Set the data from the ItemData object
         holder.textTop.setText(item.getUsername());
         holder.textBottom.setText(item.getEmail());
-
     }
 
     @Override
     public int getItemCount() {
         return items.size();
     }
+
 }
 
-class ContactsVH extends RecyclerView.ViewHolder{
+class ContactsVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     TextView textTop;
     TextView textBottom;
     private ContactsRecyclerView contactsRecyclerView;
-    public ContactsVH(@NonNull View itemView) {
+    private ContactsRecyclerView.OnItemClickListener clickListener;
+    public ContactsVH(@NonNull View itemView, ContactsRecyclerView.OnItemClickListener clickListener) {
         super(itemView);
         textTop = itemView.findViewById(R.id.search_texttop);
         textBottom = itemView.findViewById(R.id.search_textbottom);
+
+        this.clickListener = clickListener;
+        itemView.setOnClickListener(this);
+    }
+
+    public void setClickListener(ContactsRecyclerView.OnItemClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (clickListener != null) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                clickListener.onItemClick(position,textTop.getText().toString(),textBottom.getText().toString());
+            }
+        }
     }
 
     public ContactsVH linkAdapter(ContactsRecyclerView contactsRecyclerView){

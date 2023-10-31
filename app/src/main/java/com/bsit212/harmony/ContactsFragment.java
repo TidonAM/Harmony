@@ -9,11 +9,15 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -41,10 +45,13 @@ public class ContactsFragment extends Fragment {
     static TextView tvUsername;
     static ImageButton imLogout;
 
+    public EditText etSearch;
+
     public static Button btnpeople1;
     public static Button btnpeople2;
     public static Button btnpeople3;
     static RecyclerView recyclerView;
+    String etSearchStr;
 
     static ContactsRecyclerView contactsRecyclerView;
 
@@ -62,16 +69,33 @@ public class ContactsFragment extends Fragment {
 
         tvUsername = view.findViewById(R.id.home_tv_username);
         imLogout = view.findViewById(R.id.home_ib_logout);
-//        btnpeople1 = view.findViewById(R.id.btn_people1);
-//        btnpeople2 = view.findViewById(R.id.btn_people2);
-//        btnpeople3 = view.findViewById(R.id.btn_people3);
+        etSearch = view.findViewById(R.id.contacts_searchuser);
+        etSearchStr = etSearch.getText().toString();
+        if (TextUtils.isEmpty(etSearchStr)){
+            etSearchStr = null;
+        }
         MainActivity mainActivity = (MainActivity) getActivity();
 
         recyclerView = view.findViewById(R.id.contacts_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mainActivity.fetchContacts();
-        recyclerView.setAdapter(contactsRecyclerView);
 
+        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
+            @Override
+            public void onContactsFetched(List<ItemData> allContacts) {
+                items.addAll(allContacts);
+                contactsRecyclerView = new ContactsRecyclerView(items);
+                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, String toptext, String bottomtext) {
+                        Log.i("yowell","Clicked Button: "+toptext+" "+bottomtext);
+                        mainActivity.fetchOtherUID(toptext);
+                        mainActivity.otherUsername = toptext;
+                        mainActivity.launchFragment(MainActivity.launchFragment.message);
+                    }
+                });
+                recyclerView.setAdapter(contactsRecyclerView);
+            }
+        });
 
         if (mainActivity.currentUsername != null) {
             tvUsername.setText(mainActivity.currentUsername);
@@ -86,6 +110,51 @@ public class ContactsFragment extends Fragment {
             imLogout.setEnabled(false);
         }
 
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // This method is called before the text changes.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                etSearchStr = etSearch.getText().toString();
+                if (TextUtils.isEmpty(etSearchStr)){
+                    etSearchStr = null;
+                } else {
+                    Log.i("yowell",etSearchStr);
+                }
+                mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
+                    @Override
+                    public void onContactsFetched(List<ItemData> allContacts) {
+                        items.clear();
+                        items.addAll(allContacts);
+                        contactsRecyclerView = new ContactsRecyclerView(items);
+                        contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(int position, String toptext, String bottomtext) {
+                                Log.i("yowell","Clicked Button: "+toptext+" "+bottomtext);
+                                mainActivity.fetchOtherUID(toptext);
+                                mainActivity.otherUsername = toptext;
+                                mainActivity.launchFragment(MainActivity.launchFragment.message);
+                            }
+                        });
+                        recyclerView.setAdapter(contactsRecyclerView);
+                    }
+                });
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // This method is called after the text has changed.
+                String searchText = editable.toString();
+
+                // Call your search method here, passing the searchText to it.
+                // Example:
+                // fetchContacts(searchText, listener);
+            }
+        });
+
         imLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,33 +165,6 @@ public class ContactsFragment extends Fragment {
                 LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
-//        btnpeople1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MainActivity mainActivity = (MainActivity) getActivity();
-//                if (mainActivity != null) {
-//                    mainActivity.ContactstoMessage();
-//                }
-//            }
-//        });
-//        btnpeople2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MainActivity mainActivity = (MainActivity) getActivity();
-//                if (mainActivity != null) {
-//                    mainActivity.ContactstoMessage();
-//                }
-//            }
-//        });
-//        btnpeople3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MainActivity mainActivity = (MainActivity) getActivity();
-//                if (mainActivity != null) {
-//                    mainActivity.ContactstoMessage();
-//                }
-//            }
-//        });
 
         return view;
     }

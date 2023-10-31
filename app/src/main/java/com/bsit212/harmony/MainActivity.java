@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public static boolean isLoggedIn = false;
     private FirebaseAuth mAuth;
     public String currentUsername;
+    public static String otherUsername;
     FirebaseFirestore db;
     private long lastBackPressTime = 0;
     public enum launchFragment{
@@ -227,11 +228,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void fetchContacts(){
+    public interface ContactsFetchListener {
+        void onContactsFetched(List<ItemData> allContacts);
+    }
+
+    public void fetchContacts(String search, ContactsFetchListener listener){
         Log.i("yowell","fetchContacts()");
         DocumentReference userDocumentRef = getAllUsers().document(FirebaseAuth.getInstance().getUid());
         CollectionReference contactsCollection = userDocumentRef.collection("contacts");
-        Query allContactsQuery = contactsCollection;
+        Query allContactsQuery;
+
+        if (search != null) {
+            allContactsQuery = contactsCollection.whereEqualTo("username", search);
+            Log.i("yowell","fetchContacts(): search is not null");
+        } else {
+            allContactsQuery = contactsCollection;
+            Log.i("yowell","fetchContacts(): search is null");
+        }
 
         // Add a listener to retrieve all contacts
         allContactsQuery.get().addOnCompleteListener(task -> {
@@ -239,10 +252,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("yowell","fetchContacts(): task Successful");
                 QuerySnapshot querySnapshot = task.getResult();
                 List<ItemData> allContacts = new ArrayList<>();
-                ContactsFragment.contactsRecyclerView = new ContactsRecyclerView(allContacts);
 
                 for (QueryDocumentSnapshot document : querySnapshot) {
-                    Log.i("yowell","fetchContacts(): for loop commenced");
+
+                    Log.i("yowell","fetchContacts(): for loop ongoing");
 
                     Map<String, Object> contactData = document.getData();
                     Object username = contactData.get("username");
@@ -256,13 +269,12 @@ public class MainActivity extends AppCompatActivity {
                         ItemData item = new ItemData(usernameStr,emailStr);
                         allContacts.add(item);
                         Log.i("yowell","     "+usernameStr+" "+emailStr);
-                        ContactsFragment.contactsRecyclerView.notifyItemInserted(allContacts.size()-1);
                     } else {
                         Log.i("yowell","fetchContacts(): username is null");
                     }
                 }
                 Log.i("yowell","allContacts.toString(): "+allContacts.toString());
-
+                listener.onContactsFetched(allContacts);
 
             } else {
                 Log.i("yowell","fetchContacts(): task Failed");
@@ -270,6 +282,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    public void fetchOtherUID(String username){
+        DocumentReference currentUserDocumentRef = getAllUsers().document(FirebaseAuth.getInstance().getUid());
+        CollectionReference contactsCollection = currentUserDocumentRef.collection("contacts");
+
+        Query query = contactsCollection.whereEqualTo("username",username);
+
+        query.get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                QuerySnapshot querySnapshot = task.getResult();
+                if (!querySnapshot.isEmpty()) {
+                    DocumentSnapshot matchingDocument = querySnapshot.getDocuments().get(0);
+                    otherUsername = username;
+                    String otheruseruid = matchingDocument.getId();
+                    Log.i("yowell", "otheruseruid: "+otheruseruid);
+                } else {
+                    Log.e("yowell", "user does not exist");
+                }
+            } else {
+                Log.e("yowell", "Error while searching for the username: " + task.getException());
+            }
+        });
     }
 
     public static String getChatroomId(String userId1, String userId2){
@@ -277,6 +313,44 @@ public class MainActivity extends AppCompatActivity {
             return userId1+"_"+userId2;
         } else {
             return userId2+"_"+userId1;
+        }
+    }
+
+    public void createChatroom(String uid1, String uid2) {
+        DocumentReference chatroomDocRef = db.collection("chatrooms").document(getChatroomId(uid1, uid2));
+
+        Chatroom chatroom = new Chatroom(uid1, uid2);
+
+        // Set the data for the chatroom document
+        chatroomDocRef.set(chatroom)
+                .addOnSuccessListener(aVoid -> {
+                    // Successfully created chatroom
+                    // You can also create subcollections for messages and metadata here if needed
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the error
+                });
+    }
+
+    class Chatroom {
+        private String user1;
+        private String user2;
+
+        public Chatroom() {
+            // Required for Firestore
+        }
+
+        public Chatroom(String user1, String user2) {
+            this.user1 = user1;
+            this.user2 = user2;
+        }
+
+        public String getUser1() {
+            return user1;
+        }
+
+        public String getUser2() {
+            return user2;
         }
     }
 

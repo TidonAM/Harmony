@@ -8,74 +8,54 @@
     tools:context=".ContactsFragment"
     android:scrollbars="none">
 
-    <LinearLayout
-        android:id="@+id/contacts_layout_main"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="visible">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="30dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="20dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <EditText
-                    android:id="@+id/contacts_searchuser"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/custom_roundcorners"
-                    android:ems="10"
-                    android:hint="Search"
-                    android:inputType="text"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/Gray" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        android:fitsSystemWindows="true">
 
         <LinearLayout
+            android:id="@+id/contacts_layout_main"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="100">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp"
-                android:layout_weight="20"
-                android:background="@drawable/custom_circle"
-
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="30dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="50dp"
+                app:cardCornerRadius="30dp"
                 app:cardElevation="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/custom_circle"
                     android:orientation="vertical"
-                    android:padding="24dp" />
+                    android:padding="24dp">
 
+                    <EditText
+                        android:id="@+id/contacts_searchuser"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/custom_roundcorners"
+                        android:ems="10"
+                        android:hint="Search"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/Gray" />
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+
+
             <androidx.cardview.widget.CardView
-                android:layout_width="163dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:layout_weight="80"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="40dp"
                 app:cardElevation="20dp">
@@ -83,7 +63,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/custome_roundcorners_blue"
                     android:orientation="vertical"
                     android:paddingStart="30dp"
                     android:paddingTop="10dp"
@@ -100,51 +79,68 @@
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                app:cardBackgroundColor="@color/white"
+
+                app:cardCornerRadius="33dp"
+                app:cardElevation="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/custome_roundcorners_blue"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/contacts_recyclerview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            app:cardBackgroundColor="@color/white"
-
-            app:cardCornerRadius="33dp"
-            app:cardElevation="20dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/custome_roundcorners_blue"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/contacts_recyclerview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                </androidx.recyclerview.widget.RecyclerView>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+        <ImageButton
+            android:id="@+id/home_ib_add"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/custome_roundcorners_blue"
+            android:backgroundTint="@color/BlueFadingNight"
+            android:src="@drawable/dr_icon_plus"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/home_ib_logout"
+            android:layout_marginBottom="30dp"
+            android:layout_marginRight="16dp"/>
 
         <ImageButton
             android:id="@+id/home_ib_logout"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_gravity="bottom|end"
-
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:background="@drawable/custome_roundcorners_blue"
             android:backgroundTint="@color/BlueFadingNight"
             android:paddingRight="5dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="30dp"
             android:src="@drawable/dr_icon_logout"
-            android:layout_alignParentBottom="true"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="30dp"
+            android:layout_marginRight="30dp"/>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
