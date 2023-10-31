@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (search != null) {
             allContactsQuery = contactsCollection.whereEqualTo("username", search);
-            Log.i("yowell","fetchContacts(): search is not null");
+            Log.i("yowell","fetchContacts(): search is not null, "+ search);
         } else {
             allContactsQuery = contactsCollection;
             Log.i("yowell","fetchContacts(): search is null");
@@ -265,10 +265,13 @@ public class MainActivity extends AppCompatActivity {
                         String usernameStr = username.toString();
                         String emailStr = email.toString();
 
-                        // Create an ItemData object or update your existing data structure
-                        ItemData item = new ItemData(usernameStr,emailStr);
-                        allContacts.add(item);
-                        Log.i("yowell","     "+usernameStr+" "+emailStr);
+                        if (search == null || usernameStr.contains(search)) {
+                            // Create an ItemData object or update your existing data structure
+                            ItemData item = new ItemData(usernameStr, emailStr);
+                            allContacts.add(item);
+                            Log.i("yowell", "     " + usernameStr + " " + emailStr);
+                        }
+
                     } else {
                         Log.i("yowell","fetchContacts(): username is null");
                     }
