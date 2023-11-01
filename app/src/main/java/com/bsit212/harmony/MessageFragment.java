@@ -64,10 +64,9 @@ public class MessageFragment extends Fragment {
 
         view.findViewById(R.id.img_send).setOnClickListener(view2 -> {
             String typed = etType.getText().toString();
-            typed.replaceAll(System.getProperty("line.separator"), "");
+            typed = typed.trim();
             if (typed.matches("")) {
-                Toast toast = Toast.makeText(getContext(), "Type first", Toast.LENGTH_SHORT);
-                toast.show();
+                etType.setText("");
             } else {
                 items.add(typed);
                 counter++;
@@ -77,11 +76,11 @@ public class MessageFragment extends Fragment {
             }
         });
 
-//        view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
-//            if (mainActivity != null) {
-//                mainActivity.MessagetoCall();
-//            }
-//        });
+        view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
+            if (mainActivity != null) {
+                mainActivity.MessagetoCall();
+            }
+        });
 
         return view;
     }

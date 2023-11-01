@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             case message:
                 MessageFragment ms = new MessageFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_in_top)
+                        .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom)
                         .replace(R.id.fl_main,ms).commit();
                 setBackground(1);
                 break;
@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         launchFragment(launchFragment.login);
+        isLoggedIn=false;
         LoginFragment.login_changeUI(LoginFragment.LoginState.out_success, this);
     }
 
@@ -364,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null){
+        if(currentUser != null && isLoggedIn == false){
             Log.i("yowell",currentUser.getUid());
             db.collection("users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(documentSnapshot -> {
