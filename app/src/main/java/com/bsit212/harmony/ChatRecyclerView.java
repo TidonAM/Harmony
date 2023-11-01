@@ -6,14 +6,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bsit212.harmony.MainActivity.Message;
 
 import java.util.List;
 
 public class ChatRecyclerView extends RecyclerView.Adapter<ChatVH>{
 
-    List<String> items;
+    List<Message> items;
 
-    public ChatRecyclerView(List<String> items) {
+    public ChatRecyclerView(List<Message> items) {
         this.items = items;
     }
 
@@ -27,7 +28,7 @@ public class ChatRecyclerView extends RecyclerView.Adapter<ChatVH>{
 
     @Override
     public void onBindViewHolder(@NonNull ChatVH holder, int position) {
-        holder.textView.setText(items.get(position));
+        holder.textView.setText(items.get(position).getText());
     }
 
     @Override

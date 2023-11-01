@@ -88,7 +88,6 @@ public class ContactsFragment extends Fragment {
                     @Override
                     public void onItemClick(int position, String toptext, String bottomtext) {
                         Log.i("yowell","Clicked Button: "+toptext+" "+bottomtext);
-                        mainActivity.fetchOtherUID(toptext);
                         mainActivity.otherUsername = toptext;
                         mainActivity.launchFragment(MainActivity.launchFragment.message);
                     }
