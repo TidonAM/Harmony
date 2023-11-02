@@ -1,16 +1,23 @@
 package com.bsit212.harmony;
 
-import com.google.firebase.Timestamp;
-
 public class UserModel {
+
+    private String uid;
     private String username;
     private String email;
-    private Timestamp timestampCreated;
 
-    public UserModel(String username, String email, Timestamp timestampCreated) {
+    public UserModel(String uid, String username, String email) {
+        this.uid = uid;
         this.username = username;
         this.email = email;
-        this.timestampCreated = timestampCreated;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getUsername() {
@@ -29,11 +36,4 @@ public class UserModel {
         this.email = email;
     }
 
-    public Timestamp getTimestampCreated() {
-        return timestampCreated;
-    }
-
-    public void setTimestampCreated(Timestamp timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
 }

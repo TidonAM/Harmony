@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import com.bsit212.harmony.MainActivity.Message;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 
 public class MessageFragment extends Fragment {
 
@@ -35,10 +35,12 @@ public class MessageFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private String otherUsername;
+    MainActivity mainActivity;
+    String chatroomId;
     TextView tvUsername;
     RecyclerView recyclerView;
     ChatRecyclerView chatRecyclerView;
+    UserModel otherUserModel;
     int counter = 0;
 
     @Override
@@ -46,107 +48,97 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_message,container,false);
+        mainActivity = (MainActivity) getActivity();
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-
-//        int statusBarHeight = mainActivity.getStatusBarHeight();
-//        View layout = view.findViewById(R.id.toolbar); // Replace with your layout's ID
-//        layout.setPadding(20, statusBarHeight+80, 0, 30);
+        otherUserModel = MainActivity.otherUserModel;
+        chatroomId = FirebaseCmd.getChatroomId(FirebaseCmd.currentUserId(),otherUserModel.getUid());
         tvUsername = view.findViewById(R.id.message_tv_username);
-        otherUsername = mainActivity.otherUsername;
 
-        if (otherUsername == null) {
-            Toast.makeText(getActivity(),"Invalid Username",Toast.LENGTH_SHORT);
+        if (otherUserModel == null) {
+            Toast.makeText(getActivity(),"Invalid User",Toast.LENGTH_SHORT);
+            Log.e("yowell","Invalid User");
             mainActivity.launchFragment(MainActivity.launchFragment.contacts);
         } else {
-            tvUsername.setText(otherUsername);
+            tvUsername.setText(otherUserModel.getUsername());
+            mainActivity.getOrCreateChatroom(otherUserModel.getUid(), new MainActivity.MessageCallback() {
+                @Override
+                public void onMessagesReceived(List<MessageModel> messages, Query messagesCollectionSorted, CollectionReference messagesCollection) {
+                    List<MessageModel> items = new LinkedList<>();
+                    items.addAll(messages);
+                    Log.i("yowell", items.toString());
+                    // Initialize your RecyclerView and adapter here
+                    EditText etType = view.findViewById(R.id.et_type);
+                    recyclerView = view.findViewById(R.id.message_recyclerview);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                    linearLayoutManager.setStackFromEnd(true);
+                    recyclerView.setLayoutManager(linearLayoutManager);
+
+                    Query query = messagesCollectionSorted;
+                    FirestoreRecyclerOptions<MessageModel> options = new FirestoreRecyclerOptions.Builder<MessageModel>()
+                            .setQuery(query, MessageModel.class)
+                            .build();
+                    ChatRecyclerView chatRecyclerView = new ChatRecyclerView(options, getContext());
+                    recyclerView.setAdapter(chatRecyclerView);
+                    chatRecyclerView.startListening();
+
+                    chatRecyclerView.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                        @Override
+                        public void onItemRangeInserted(int positionStart, int itemCount) {
+                            super.onItemRangeInserted(positionStart, itemCount);
+                            int endPosition = positionStart + itemCount - 1;
+                            recyclerView.smoothScrollToPosition(endPosition);
+                        }
+                    });
+
+                    view.findViewById(R.id.img_send).setOnClickListener(view2 -> {
+                        Log.d("yowell", "Send button clicked");
+                        String typed = etType.getText().toString();
+                        typed = typed.trim();
+                        if (typed.isEmpty()) {
+                            etType.setText("");
+                        } else {
+                            MessageModel message = new MessageModel();
+                            message.setSender(mainActivity.getCurrentUIDStr());
+                            message.setText(typed);
+                            message.setTimestamp(Timestamp.now());
+                            Map<String, Object> messageData = new HashMap<>();
+                            messageData.put("sender", mainActivity.getCurrentUIDStr());
+                            messageData.put("text", typed);
+                            messageData.put("timestamp", Timestamp.now());
+
+                            messagesCollection.add(messageData)
+                                    .addOnSuccessListener(documentReference -> {
+                                        items.add(message);
+                                        Log.d("yowell", "Message Sent ");
+//                                                chatRecyclerView.notifyItemInserted(items.size() - 1);
+//                                                recyclerView.scrollToPosition(items.size() - 1);
+                                        etType.setText(""); // Clear the input field
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Handle the case where the message sending failed
+                                        Log.d("yowell", "Error sending message: " + e);
+                                    });
+                        }
+                    });
+                }
+                @Override
+                public void onMessageFetchFailed() {
+                    Log.i("yowell", "onMessageFetchFailed()");
+                }
+            });
         }
 
         EditText etType = view.findViewById(R.id.et_type);
 
 
-        mainActivity.fetchOtherUser(otherUsername, new MainActivity.FetchUserCallback() {
-            @Override
-            public void onUserFetched(MainActivity.userClass user) {
-                if (user == null) {
-                    Toast.makeText(getActivity(), "Invalid User", Toast.LENGTH_SHORT);
-                    mainActivity.launchFragment(MainActivity.launchFragment.contacts);
-                } else {
-                    tvUsername.setText(otherUsername);
-                    Log.i("yowell", "onUserFetched(): " + user.getUid());
+        Toast.makeText(getActivity(), "Failed to fetch user data", Toast.LENGTH_SHORT);
+        mainActivity.launchFragment(MainActivity.launchFragment.contacts);
 
-                    mainActivity.getOrCreateChatroom(user.getUid(), new MainActivity.MessageCallback() {
-                        List<Message> items = new LinkedList<>();
-                        @Override
-                        public void onMessagesReceived(List<Message> messages, CollectionReference messagesCollection) {
-                            for (Message message : messages) {
-                                Log.i("yowell", "for Message message" + message.getText());
-                            }
-                            items.clear();
-                            items.addAll(messages);
-                            Log.i("yowell", items.toString());
-                            EditText etType = view.findViewById(R.id.et_type);
-                            recyclerView = view.findViewById(R.id.message_recyclerview);
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            linearLayoutManager.setStackFromEnd(true);
-                            recyclerView.setLayoutManager(linearLayoutManager);
-                            chatRecyclerView = new ChatRecyclerView(items);
-                            recyclerView.setAdapter(chatRecyclerView);
 
-                            view.findViewById(R.id.img_send).setOnClickListener(view2 -> {
-                                String typed = etType.getText().toString();
-                                typed = typed.trim();
-                                Message message = new Message();
-                                message.setSender(mainActivity.getCurrentUIDStr());
-                                message.setText(typed);
-                                message.setTimestamp(Timestamp.now());
-                                Map<String, Object> messageData = new HashMap<>();
-                                messageData.put("sender", mainActivity.getCurrentUIDStr());
-                                messageData.put("text", typed);
-                                messageData.put("timestamp", Timestamp.now());
-                                if (typed.isEmpty()) {
-                                    etType.setText("");
-                                } else {
-//                                    counter++;
-//                                    chatRecyclerView.notifyItemInserted(items.size()-1);
-//                                    recyclerView.scrollToPosition(items.size()-1);
-//                                    etType.setText("");
-                                    messagesCollection.add(messageData)
-                                            .addOnSuccessListener(documentReference -> {
-                                                items.add(message);
-                                                Toast.makeText(getActivity(), "message sent", Toast.LENGTH_SHORT).show();
-                                                chatRecyclerView.notifyItemInserted(items.size()-1);
-                                                counter++;
-                                                etType.setText(""); // Clear the input field
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                // Handle the case where the message sending failed
-                                                Log.e("Firestore", "Error sending message: " + e);
-                                            });
-
-                                }
-                            });
-                        }
-                        @Override
-                        public void onMessageFetchFailed() {
-                            Log.i("yowell", "onMessageFetchFailed()");
-                        }
-
-                    });
-
-                }
-            }
-            @Override
-            public void onUserFetchFailed() {
-                // Handle the case where user data fetch failed
-                Toast.makeText(getActivity(), "Failed to fetch user data", Toast.LENGTH_SHORT);
-                mainActivity.launchFragment(MainActivity.launchFragment.contacts);
-            }
-        });
 
         view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
             if (mainActivity != null) {
-                mainActivity.MessagetoCall();
+                mainActivity.launchFragment(MainActivity.launchFragment.call);
             }
         });
 

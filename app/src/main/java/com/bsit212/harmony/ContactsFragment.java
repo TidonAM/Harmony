@@ -1,6 +1,9 @@
 package com.bsit212.harmony;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -20,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,6 +49,8 @@ public class ContactsFragment extends Fragment {
     static TextView tvUsername;
     static ImageButton imLogout;
 
+    static ImageButton imAdd;
+
     public EditText etSearch;
 
     public static Button btnpeople1;
@@ -53,68 +59,82 @@ public class ContactsFragment extends Fragment {
     static RecyclerView recyclerView;
     String etSearchStr;
 
+    MainActivity mainActivity;
+
+    public List<UserModel> items;
+
     static ContactsRecyclerView contactsRecyclerView;
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
+    private void showCustomEmailDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_addcontact, null);
+        builder.setView(dialogView);
+
+        EditText emailEditText = dialogView.findViewById(R.id.et_email);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String email = emailEditText.getText().toString();
+                Toast.makeText(getActivity(), email, Toast.LENGTH_SHORT).show();
+                mainActivity = (MainActivity) getActivity();
+                mainActivity.createContact(email);
+                refreshContacts();
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts,container,false);
-
-        List<ItemData> items = new ArrayList<>();
-
+        mainActivity = (MainActivity) getActivity();
+        items = new ArrayList<>();
         tvUsername = view.findViewById(R.id.home_tv_username);
         imLogout = view.findViewById(R.id.home_ib_logout);
+        imAdd = view.findViewById(R.id.home_ib_add);
         etSearch = view.findViewById(R.id.contacts_searchuser);
-        etSearchStr = etSearch.getText().toString();
-        if (TextUtils.isEmpty(etSearchStr)){
-            etSearchStr = null;
-        }
-        MainActivity mainActivity = (MainActivity) getActivity();
-
         recyclerView = view.findViewById(R.id.contacts_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
-            @Override
-            public void onContactsFetched(List<ItemData> allContacts) {
-                items.addAll(allContacts);
-                contactsRecyclerView = new ContactsRecyclerView(items);
-                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position, String toptext, String bottomtext) {
-                        Log.i("yowell","Clicked Button: "+toptext+" "+bottomtext);
-                        mainActivity.otherUsername = toptext;
-                        mainActivity.launchFragment(MainActivity.launchFragment.message);
-                    }
-                });
-                recyclerView.setAdapter(contactsRecyclerView);
-            }
-        });
-
-        if (mainActivity.currentUsername != null) {
-            tvUsername.setText(mainActivity.currentUsername);
+        if (mainActivity.currentUserModel != null) {
+            tvUsername.setText(mainActivity.currentUserModel.getUsername());
         } else {
-            Log.i("yowell","signingout");
+            Log.i("yowell","ContactsFragment: currentUserModel is null, signing out");
             mainActivity.signOut();
         }
-
         if (MainActivity.isLoggedIn == true) {
             imLogout.setEnabled(true);
         } else {
             imLogout.setEnabled(false);
         }
 
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // This method is called before the text changes.
-            }
+        if (TextUtils.isEmpty(etSearchStr)){
+            etSearchStr = null;
+        }
+        etSearchStr = etSearch.getText().toString();
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        refreshContacts();
+
+        etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 etSearchStr = etSearch.getText().toString();
@@ -123,35 +143,13 @@ public class ContactsFragment extends Fragment {
                 } else {
                     Log.i("yowell",etSearchStr);
                 }
-                mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
-                    @Override
-                    public void onContactsFetched(List<ItemData> allContacts) {
-                        items.clear();
-                        items.addAll(allContacts);
-                        contactsRecyclerView = new ContactsRecyclerView(items);
-                        contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(int position, String toptext, String bottomtext) {
-                                Log.i("yowell","Clicked Button: "+toptext+" "+bottomtext);
-                                mainActivity.fetchOtherUID(toptext);
-                                mainActivity.otherUsername = toptext;
-                                mainActivity.launchFragment(MainActivity.launchFragment.message);
-                            }
-                        });
-                        recyclerView.setAdapter(contactsRecyclerView);
-                    }
-                });
+                refreshContacts();
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-                // This method is called after the text has changed.
-                String searchText = editable.toString();
-
-                // Call your search method here, passing the searchText to it.
-                // Example:
-                // fetchContacts(searchText, listener);
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {}
         });
 
         imLogout.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +163,43 @@ public class ContactsFragment extends Fragment {
             }
         });
 
+        imAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCustomEmailDialog();
+            }
+        });
         return view;
+    }
+    public void refreshContacts(){
+        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
+            @Override
+            public void onContactsFetched(List<UserModel> allContacts) {
+                items.clear();
+                items.addAll(allContacts);
+                contactsRecyclerView = new ContactsRecyclerView(items);
+                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, String toptext, String bottomtext) {
+                        Log.d("yowell","refreshContacts().onItemClick(): "+toptext+" "+bottomtext);
+                        mainActivity.fetchOtherUserModel(null, toptext, null, new MainActivity.FetchUserCallback() {
+                            @Override
+                            public void onUserFetched(UserModel user) {
+                                mainActivity.launchFragment(MainActivity.launchFragment.message);
+                                mainActivity.otherUserModel = user;
+                            }
+
+                            @Override
+                            public void onUserFetchFailed() {
+                                Log.e("yowell","Can't get User");
+                            }
+                        });
+
+                    }
+                });
+                recyclerView.setAdapter(contactsRecyclerView);
+            }
+        });
     }
 
     /**

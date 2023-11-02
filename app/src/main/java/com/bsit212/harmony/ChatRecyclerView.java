@@ -1,21 +1,23 @@
 package com.bsit212.harmony;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bsit212.harmony.MainActivity.Message;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import java.util.List;
+public class ChatRecyclerView extends FirestoreRecyclerAdapter<MessageModel, ChatRecyclerView.ChatVH> {
 
-public class ChatRecyclerView extends RecyclerView.Adapter<ChatVH>{
+    Context context;
 
-    List<Message> items;
-
-    public ChatRecyclerView(List<Message> items) {
-        this.items = items;
+    public ChatRecyclerView(@NonNull FirestoreRecyclerOptions<MessageModel> options, Context context) {
+        super(options);
+        this.context = context;
     }
 
     @NonNull
@@ -23,31 +25,34 @@ public class ChatRecyclerView extends RecyclerView.Adapter<ChatVH>{
     public ChatVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_send, parent, false);
-        return new ChatVH(view).linkAdapter(this);
+        return new ChatVH(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatVH holder, int position) {
-        holder.textView.setText(items.get(position).getText());
+    public void onBindViewHolder(@NonNull ChatVH holder, int position, @NonNull MessageModel message) {
+        if (message.getSender().equals(MainActivity.getCurrentUIDStr())) {
+            holder.tvRcv.setVisibility(View.GONE);
+            holder.layoutRcv.setVisibility(View.GONE);
+            holder.tvSend.setText(message.getText());
+        } else {
+            holder.tvSend.setVisibility(View.GONE);
+            holder.layoutSend.setVisibility(View.GONE);
+            holder.tvRcv.setText(message.getText());
+        }
     }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-}
+    class ChatVH extends RecyclerView.ViewHolder {
+        TextView tvSend;
+        TextView tvRcv;
+        RelativeLayout layoutSend;
+        RelativeLayout layoutRcv;
 
-class ChatVH extends RecyclerView.ViewHolder{
-
-    TextView textView;
-    private ChatRecyclerView chatRecyclerView;
-    public ChatVH(@NonNull View itemView) {
-        super(itemView);
-        textView = itemView.findViewById(R.id.tv_send);
-    }
-
-    public ChatVH linkAdapter(ChatRecyclerView chatRecyclerView){
-        this.chatRecyclerView = chatRecyclerView;
-        return this;
+        public ChatVH(@NonNull View itemView) {
+            super(itemView);
+            tvSend = itemView.findViewById(R.id.tv_send);
+            tvRcv = itemView.findViewById(R.id.tv_rcv);
+            layoutSend = itemView.findViewById(R.id.layout_send);
+            layoutRcv = itemView.findViewById(R.id.layout_rcv);
+        }
     }
 }

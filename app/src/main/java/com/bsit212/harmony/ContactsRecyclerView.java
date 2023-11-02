@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
-    List<ItemData> items;
+    List<UserModel> items;
     private OnItemClickListener clickListener;
 
-    public ContactsRecyclerView(List<ItemData> items) {
+    public ContactsRecyclerView(List<UserModel> items) {
         this.items = items;
     }
 
@@ -36,7 +36,7 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
 
     @Override
     public void onBindViewHolder(@NonNull ContactsVH holder, int position) {
-        ItemData item = items.get(position);
+        UserModel item = items.get(position);
 
         // Set the data from the ItemData object
         holder.textTop.setText(item.getUsername());
