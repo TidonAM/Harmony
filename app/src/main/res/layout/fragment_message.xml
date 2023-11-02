@@ -66,25 +66,25 @@
             android:layout_toLeftOf="@id/layout_relative_type"/>
 
         <RelativeLayout
+            android:id="@+id/layout_relative_type"
             android:layout_width="290sp"
             android:layout_height="match_parent"
-            android:id="@+id/layout_relative_type"
             android:layout_centerInParent="true">
 
             <EditText
                 android:id="@+id/et_type"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="-30dp"
                 android:background="@android:color/transparent"
                 android:backgroundTint="@color/white"
                 android:elevation="10dp"
                 android:hint="Type here"
                 android:paddingStart="20dp"
                 android:paddingBottom="40dp"
-                android:layout_marginBottom="-30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/Gray" />
 

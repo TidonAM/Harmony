@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CallFragment">
+    tools:context=".CallFragment"
+    android:fitsSystemWindows="true">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/BlueCornflower"
+        android:weightSum="100">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/img_call"
+            android:layout_width="50dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="10dp"
+            android:layout_centerInParent="true"
+            android:layout_weight="10"
+            android:clickable="true"
+            android:src="@drawable/icon_call" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
