@@ -335,57 +335,10 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         //if chatroom exists
-                        CollectionReference messagesCollection = chatroomDocRef.collection("messages");
-
-                        Query messagesCollectionSorted = chatroomDocRef.collection("messages").orderBy("timestamp", Query.Direction.ASCENDING);
-                        messagesCollection.get()
-                                        .addOnCompleteListener(task -> {
-                                            if(task.isSuccessful()) {
-                                                QuerySnapshot querySnapshot = task.getResult();
-                                                if (!querySnapshot.isEmpty()) {
-                                                    messagesCollectionSorted
-                                                            .get()
-                                                            .addOnSuccessListener(queryDocumentSnapshots -> {
-                                                                List<MessageModel> items = new LinkedList<>();
-                                                                for (QueryDocumentSnapshot messageDoc : queryDocumentSnapshots) {
-                                                                    String sender = messageDoc.getString("sender");
-                                                                    String text = messageDoc.getString("text");
-                                                                    Timestamp timestamp = messageDoc.getTimestamp("timestamp");
-                                                                    MessageModel message = new MessageModel();
-                                                                    message.setSender(sender);
-                                                                    Log.i("yowell","getChatroom Message: "+text);
-                                                                    message.setText(text);
-                                                                    message.setTimestamp(timestamp);
-                                                                    items.add(message);
-                                                                    callback.onMessagesReceived(items,messagesCollectionSorted,messagesCollection);
-                                                                }
-                                                            })
-                                                            .addOnFailureListener(e -> {
-                                                                Log.i("yowell","Messages exists, but failed to fetch");
-                                                                callback.onMessageFetchFailed();
-                                                            });
-                                                } else {
-                                                    List<MessageModel> items = new LinkedList<>();
-                                                    callback.onMessagesReceived(items,messagesCollectionSorted, messagesCollection);
-                                                    Log.i("yowell","Messages do not exist. Creating..");
-                                                }
-                                            } else {
-
-                                            }
-
-                                        });
+                        getMessages(chatroomDocRef, callback);
 
                     } else {
-                        //if chatroom does not exist
-                        chatroomDocRef.set(new ChatroomModel(getCurrentUIDStr(), uid2))
-                                .addOnSuccessListener(aVoid -> {
-                                    CollectionReference messagesCollection = chatroomDocRef.collection("messages");
-                                    List<MessageModel> items = new LinkedList<>();
-                                    callback.onMessagesReceived(items,messagesCollection, messagesCollection);
-                                })
-                                .addOnFailureListener(e -> {
-
-                                });
+                        createChatroom(chatroomDocRef, uid2, callback);
                     }
                 });
     }
@@ -413,6 +366,47 @@ public class MainActivity extends AppCompatActivity {
                     // Handle the case where fetching chatroom messages failed
                     callback.onMessageFetchFailed();
                 });
+
+//        CollectionReference messagesCollection = chatroomDocRef.collection("messages");
+//
+//        Query messagesCollectionSorted = chatroomDocRef.collection("messages").orderBy("timestamp", Query.Direction.ASCENDING);
+//        messagesCollection.get()
+//                .addOnCompleteListener(task -> {
+//                    if(task.isSuccessful()) {
+//                        QuerySnapshot querySnapshot = task.getResult();
+//                        if (!querySnapshot.isEmpty()) {
+//                            messagesCollectionSorted
+//                                    .get()
+//                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+//                                        List<MessageModel> items = new LinkedList<>();
+//                                        for (QueryDocumentSnapshot messageDoc : queryDocumentSnapshots) {
+//                                            String sender = messageDoc.getString("sender");
+//                                            String text = messageDoc.getString("text");
+//                                            Timestamp timestamp = messageDoc.getTimestamp("timestamp");
+//                                            MessageModel message = new MessageModel();
+//                                            message.setSender(sender);
+//                                            Log.i("yowell","getChatroom Message: "+text);
+//                                            message.setText(text);
+//                                            message.setTimestamp(timestamp);
+//                                            items.add(message);
+//                                            callback.onMessagesReceived(items,messagesCollectionSorted,messagesCollection);
+//                                        }
+//                                    })
+//                                    .addOnFailureListener(e -> {
+//                                        Log.i("yowell","Messages exists, but failed to fetch");
+//                                        callback.onMessageFetchFailed();
+//                                    });
+//                        } else {
+//                            List<MessageModel> items = new LinkedList<>();
+//                            callback.onMessagesReceived(items,messagesCollectionSorted, messagesCollection);
+//                            Log.i("yowell","Messages do not exist. Creating..");
+//                        }
+//                    } else {
+//
+//                    }
+//
+//                });
+
     }
 
     private void createChatroom(DocumentReference chatroomDocRef, String uid2, MessageCallback callback) {
@@ -425,6 +419,18 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     // Handle the case where creating the chatroom failed
                 });
+
+
+//        //if chatroom does not exist
+//        chatroomDocRef.set(new ChatroomModel(getCurrentUIDStr(), uid2))
+//                .addOnSuccessListener(aVoid -> {
+//                    CollectionReference messagesCollection = chatroomDocRef.collection("messages");
+//                    List<MessageModel> items = new LinkedList<>();
+//                    callback.onMessagesReceived(items,messagesCollection, messagesCollection);
+//                })
+//                .addOnFailureListener(e -> {
+//
+//                });
     }
 
     public void getCurrentUserModel(getCurrentUserCallback callback) {

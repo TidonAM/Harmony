@@ -50,7 +50,7 @@ public class MessageFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_message,container,false);
         mainActivity = (MainActivity) getActivity();
 
-        otherUserModel = MainActivity.otherUserModel;
+        otherUserModel = mainActivity.otherUserModel;
         chatroomId = FirebaseCmd.getChatroomId(FirebaseCmd.currentUserId(),otherUserModel.getUid());
         tvUsername = view.findViewById(R.id.message_tv_username);
 
@@ -129,12 +129,6 @@ public class MessageFragment extends Fragment {
         }
 
         EditText etType = view.findViewById(R.id.et_type);
-
-
-        Toast.makeText(getActivity(), "Failed to fetch user data", Toast.LENGTH_SHORT);
-        mainActivity.launchFragment(MainActivity.launchFragment.contacts);
-
-
 
         view.findViewById(R.id.img_call).setOnClickListener(view2 -> {
             if (mainActivity != null) {

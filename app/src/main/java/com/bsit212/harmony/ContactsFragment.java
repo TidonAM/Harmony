@@ -185,8 +185,9 @@ public class ContactsFragment extends Fragment {
                         mainActivity.fetchOtherUserModel(null, toptext, null, new MainActivity.FetchUserCallback() {
                             @Override
                             public void onUserFetched(UserModel user) {
-                                mainActivity.launchFragment(MainActivity.launchFragment.message);
                                 mainActivity.otherUserModel = user;
+                                Log.d("yowell","refreshContacts().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
+                                mainActivity.launchFragment(MainActivity.launchFragment.message);
                             }
 
                             @Override
