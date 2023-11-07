@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +56,7 @@ public class ContactsFragment extends Fragment {
     static ImageButton imAdd;
 
     public EditText etSearch;
+    static ProgressBar progressBar;
 
     public static Button btnpeople1;
     public static Button btnpeople2;
@@ -132,6 +134,7 @@ public class ContactsFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         items = new ArrayList<>();
         tvUsername = view.findViewById(R.id.home_tv_username);
+        progressBar = view.findViewById(R.id.contacts_progressbar);
         imLogout = view.findViewById(R.id.home_ib_logout);
         imAdd = view.findViewById(R.id.home_ib_add);
         etSearch = view.findViewById(R.id.contacts_searchuser);
@@ -142,8 +145,9 @@ public class ContactsFragment extends Fragment {
         } else {
             Log.i("yowell","ContactsFragment: currentUserModel is null, signing out");
             mainActivity.signOut();
+            mainActivity.isLoggedIn = false;
         }
-        if (MainActivity.isLoggedIn == true) {imLogout.setEnabled(true);} else {imLogout.setEnabled(false);}
+        if (mainActivity.isLoggedIn == true) {imLogout.setEnabled(true);} else {imLogout.setEnabled(false);}
 
         etSearchStr = etSearch.getText().toString();
         if (TextUtils.isEmpty(etSearchStr)){ etSearchStr = null; }
@@ -171,6 +175,7 @@ public class ContactsFragment extends Fragment {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 if (mainActivity != null) {
                     mainActivity.signOut();
+                    mainActivity.isLoggedIn = false;
                 }
                 LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
@@ -184,10 +189,52 @@ public class ContactsFragment extends Fragment {
 
         return view;
     }
+//    public void refreshContacts(){
+//        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
+//            @Override
+//            public void onContactsFetched(List<UserModel> allContacts) {
+//                items.clear();
+//                items.addAll(allContacts);
+//                contactsRecyclerView = new ContactsRecyclerView(items);
+//                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(int position, String toptext, String bottomtext) {
+//                        Log.d("yowell","refreshContacts().onItemClick(): "+toptext+" "+bottomtext);
+//                        mainActivity.fetchUserModel(true,null, toptext, null, new MainActivity.FetchUserCallback() {
+//                            @Override
+//                            public void onUserFetched(UserModel user) {
+//                                mainActivity.otherUserModel = user;
+//                                Log.d("yowell","refreshContacts().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
+//                                mainActivity.launchFragment(MainActivity.launchFragment.message);
+//                            }
+//
+//                            @Override
+//                            public void onUserFetchFailed() {
+//                                Log.e("yowell","Can't get User");
+//                            }
+//                        });
+//
+//                    }
+//                });
+//                recyclerView.setAdapter(contactsRecyclerView);
+//            }
+//        });
+//
+//    }
 
+    public void isLoading(boolean bool){
+        if (bool==true){
+            progressBar.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
     public void refreshC(){
+        isLoading(true);
         Log.d("yowell","refreshC()");
-        mainActivity.fetchChatroomsAndLastMessages(FirebaseCmd.currentUserId(), new MainActivity.ChatroomsFetchListener() {
+        mainActivity.fetchChatroomsAndLastMessages(etSearchStr, new MainActivity.ChatroomsFetchListener() {
             @Override
             public void onChatroomsFetched(List<ContactsModel> chatrooms) {
                 Log.d("yowell","onChatroomsFetched()");
@@ -198,14 +245,13 @@ public class ContactsFragment extends Fragment {
                     @Override
                     public void onItemClick(int position, String toptext, String bottomtext) {
                         Log.d("yowell","refreshC().onItemClick(): "+toptext+" "+bottomtext);
-                        mainActivity.fetchUserModel(false,null, toptext, null, new MainActivity.FetchUserCallback() {
+                        mainActivity.fetchUserModel(null, toptext, null, new MainActivity.FetchUserCallback() {
                             @Override
                             public void onUserFetched(UserModel user) {
                                 mainActivity.otherUserModel = user;
                                 Log.d("yowell","refreshC().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
                                 mainActivity.launchFragment(MainActivity.launchFragment.message);
                             }
-
                             @Override
                             public void onUserFetchFailed() {
                                 Log.e("yowell","Can't get User");
@@ -214,6 +260,7 @@ public class ContactsFragment extends Fragment {
                     }
                 });
                 recyclerView.setAdapter(contactsRecyclerView);
+                isLoading(false);
             }
 
             @Override

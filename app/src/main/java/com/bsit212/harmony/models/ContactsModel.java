@@ -1,5 +1,7 @@
 package com.bsit212.harmony.models;
 
+import com.google.firebase.Timestamp;
+
 public class ContactsModel {
     private String chatroomId;
     private UserModel user;

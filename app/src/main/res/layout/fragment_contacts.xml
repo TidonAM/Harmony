@@ -83,7 +83,7 @@
 
 
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/custom_roundcorners_toponly"
@@ -92,14 +92,32 @@
                     android:orientation="vertical"
                     android:padding="30dp">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/contacts_recyclerview"
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="329dp">
+                        android:layout_height="match_parent"
+                        android:paddingBottom="60dp">
 
-                    </androidx.recyclerview.widget.RecyclerView>
+                        <ProgressBar
+                            android:id="@+id/contacts_progressbar"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:indeterminate="true"
+                            android:indeterminateTint="@color/BlueCornflower"
+                            android:layout_centerInParent="true"
+                            android:paddingBottom="60dp"/>
 
-                </LinearLayout>
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/contacts_recyclerview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingBottom="60dp">
+
+                        </androidx.recyclerview.widget.RecyclerView>
+                    </RelativeLayout>
+
+
+                </RelativeLayout>
 
         </LinearLayout>
 

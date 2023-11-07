@@ -1,5 +1,6 @@
 package com.bsit212.harmony;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bsit212.harmony.cmd.FirebaseCmd;
 import com.bsit212.harmony.models.ContactsModel;
 import com.bsit212.harmony.models.UserModel;
 
@@ -42,8 +44,17 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
 
         // Set the data from the ItemData object
         holder.textTop.setText(item.getUser().getUsername());
+        holder.textSide.setText(item.getUser().getEmail());
+        String sender = null;
         if (item.getLastMessage() != null){
-            holder.textBottom.setText(item.getLastMessage().getText());
+            if (item.getLastMessage().getSender() == FirebaseCmd.currentUserId()){
+                Log.d("yowell",item.getLastMessage().getSender());
+                sender = "You: ";
+            } else {
+                sender = item.getLastMessage().getSender() + ": ";
+                Log.d("yowell",item.getLastMessage().getSender());
+            }
+            holder.textBottom.setText(sender+item.getLastMessage().getText());
         }
 
     }
@@ -59,12 +70,14 @@ class ContactsVH extends RecyclerView.ViewHolder implements View.OnClickListener
 
     TextView textTop;
     TextView textBottom;
+    TextView textSide;
     private ContactsRecyclerView contactsRecyclerView;
     private ContactsRecyclerView.OnItemClickListener clickListener;
     public ContactsVH(@NonNull View itemView, ContactsRecyclerView.OnItemClickListener clickListener) {
         super(itemView);
         textTop = itemView.findViewById(R.id.search_texttop);
         textBottom = itemView.findViewById(R.id.search_textbottom);
+        textSide = itemView.findViewById(R.id.search_textside);
 
         this.clickListener = clickListener;
         itemView.setOnClickListener(this);

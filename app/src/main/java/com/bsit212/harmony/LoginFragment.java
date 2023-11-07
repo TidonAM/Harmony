@@ -1,9 +1,11 @@
 package com.bsit212.harmony;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.text.Editable;
@@ -20,6 +22,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.regex.Matcher;
@@ -45,23 +50,62 @@ public class LoginFragment extends Fragment{
     static TextView tvRegister;
     static Button btnLogin;
     static ImageView autoSet;
+    private androidx.appcompat.app.AlertDialog customEmailDialog;
 
     public LoginFragment() {
         // Required empty public constructor
     }
+    public boolean isValid(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 
+    private void showCustomEmailDialog() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_addcontact, null);
+        builder.setView(dialogView);
+        TextInputLayout tilEmail = dialogView.findViewById(R.id.til_email);
+        EditText emailEditText = dialogView.findViewById(R.id.et_email);
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilEmail.setError(null);
+            }
+        });
+
+        customEmailDialog = new MaterialAlertDialogBuilder(getActivity())
+                .setTitle("Forgot Password")
+                .setView(dialogView)
+                .setPositiveButton("Send email", null)
+                .setNegativeButton("Cancel", null)
+                .show();
+
+        customEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = emailEditText.getText().toString();
+                if (isValid(email)) {
+                    mainActivity.mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(mainActivity, "password reset email sent", Toast.LENGTH_SHORT).show();
+                                customEmailDialog.dismiss();
+                            } else {
+                                tilEmail.setError("Invalid Email");
+                            }
+                        }
+                    });
+                } else {
+                    tilEmail.setError("Invalid Email");
+                }
+            }
+        });
+    }
     public void onClick(View v){
-        String[] usernames = {
-                "angeltidon18@yahoo.com",
-                "tatsudoni2600@gmail.com",
-                // Add more usernames as needed
-        };
-
-        String[] passwords = {
-                "angelt",
-                "tatsudoni",
-                // Add more passwords as needed
-        };
+        String[] usernames = {"angeltidon18@yahoo.com", "tatsudoni2600@gmail.com"};
+        String[] passwords = {"angelt", "tatsudoni"};
         if (v.getId() == R.id.imageView4){
             if (currentAccountIndex < usernames.length) {
                 etUsername.setText(usernames[currentAccountIndex]);
@@ -76,7 +120,7 @@ public class LoginFragment extends Fragment{
                 }
             }
         } else if (v.getId() == R.id.login_tv_forget) {
-
+            showCustomEmailDialog();
         } else if (v.getId() == R.id.login_tv_register) {
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {

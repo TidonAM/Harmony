@@ -12,30 +12,52 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             app:cardCornerRadius="10dp"
-            app:cardElevation="5dp">
+            app:cardElevation="5dp"
+            android:backgroundTint="@color/white">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
-                    android:id="@+id/button_container">
+                    android:id="@+id/button_container"
+                    android:padding="15dp">
                         <TextView
                             android:id="@+id/search_texttop"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="NICKNAME"
                             android:textSize="20sp"
-                            android:layout_marginStart="15dp"
-                            android:layout_marginTop="10dp"/>
+                            android:textColor="@color/black"/>
+                        <TextView
+                            android:id="@+id/search_textdiv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="○"
+                            android:textSize="20sp"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/BlueFadingNight"
+                            android:layout_toRightOf="@id/search_texttop"/>
+                        <TextView
+                            android:id="@+id/search_textside"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="EMAIL"
+                            android:textSize="10sp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@color/BlueFadingNight"
+                            android:layout_toRightOf="@id/search_textdiv"
+                            android:maxLines="1"/>
                         <TextView
                             android:id="@+id/search_textbottom"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="username"
-                            android:textSize="10sp"
+                            android:layout_alignTop="@+id/search_texttop"
+                            android:text="no messages"
+                            android:textSize="15sp"
                             android:layout_marginStart="20dp"
-                            android:layout_marginTop="35dp"
-                            android:layout_marginBottom="10dp"/>
+                            android:layout_marginTop="30dp"
+                            android:textColor="@color/DarkGray"/>
                 </RelativeLayout>
 
         </androidx.cardview.widget.CardView>

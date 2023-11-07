@@ -9,8 +9,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,6 +28,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.*;
 import com.google.firebase.firestore.CollectionReference;
@@ -36,6 +43,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,19 +52,17 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public static boolean isLoggedIn = false;
-    private FirebaseAuth mAuth;
+    public FirebaseAuth mAuth;
 //    public String currentUsername;
 //    public static String otherUsername;
     public static UserModel otherUserModel;
     public UserModel currentUserModel;
-
     public ChatroomModel chatroomModel;
     public String chatroomId;
 
     FirebaseFirestore db;
     private long lastBackPressTime = 0;
 
-//    public String otheruseruid;
     public enum launchFragment{
         login,
         contacts,
@@ -64,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         register,
         call
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,14 +146,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void login(String email, String password){
         LoginFragment.login_changeUI(LoginFragment.LoginState.in_ongoing, this);
+        Log.e("yowell","sadlife1");
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            fetchUserModel(false, FirebaseCmd.currentUserId(), null, null, new FetchUserCallback() {
+                            Log.e("yowell","sadlife2 task is successful "+FirebaseCmd.currentUserId());
+                            fetchUserModel(FirebaseCmd.currentUserId(), null, null, new FetchUserCallback() {
                                 @Override
                                 public void onUserFetched(UserModel user) {
+                                    Log.e("yowell","sadlife3");
                                     currentUserModel = user;
                                     isLoggedIn=true;
                                     launchFragment(launchFragment.contacts);
@@ -160,13 +168,10 @@ public class MainActivity extends AppCompatActivity {
                             });
                         } else {
                             LoginFragment.login_changeUI(LoginFragment.LoginState.in_incorrect, MainActivity.this);
+                            Log.e("yowell","sadlife4");
                         }
                     }
                 });
-    }
-
-    public UserModel setToUserModel(String uid, String username, String email) {
-        return new UserModel(uid, username, email);
     }
 
     public void register(String email, String username, String password){
@@ -203,6 +208,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void forgot(String email){
+    }
+
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         launchFragment(launchFragment.login);
@@ -231,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("yowell", "Contact already exists");
                     callback.onContactExists();
                 } else {
-                    fetchUserModel(false, null, null, email, new FetchUserCallback() {
+                    fetchUserModel(null, null, email, new FetchUserCallback() {
                         @Override
                         public void onUserFetched(UserModel user) {
                             Map<String, Object> contactData = new HashMap<>();
@@ -291,39 +299,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     public interface ChatroomsFetchListener {
         void onChatroomsFetched(List<ContactsModel> chatrooms);
         void onChatroomsFetchFailed();
     }
-
-//    public void fetchRecentChats(String currentUserId, ChatroomsFetchListener lister) {
-//        Query getAllChatroomsQuery = FirebaseCmd.allChatroomCollectionReference()
-//                .whereArrayContainsAny("users", Arrays.asList(currentUserId));
-//
-//        getAllChatroomsQuery.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                QuerySnapshot chatroomSnapshot = task.getResult();
-//                List<ContactsModel> contactsModels = new ArrayList<>();
-//
-//                for (QueryDocumentSnapshot chatroomDoc : chatroomSnapshot) {
-//                    String chatroomId = chatroomDoc.getId();
-//                    List<String> users = chatroomDoc.get("users", List.class);
-//                    String otherUID = findOtherUser(users, currentUserId);
-//
-//                    fetchUserModel(false, otherUID,null,null, user -> {
-//                        if (user !=null) {
-//
-//                        }
-//                    });
-//                }
-//            }
-//        });
-//    }
-    public void fetchChatroomsAndLastMessages(String currentUserId, final ChatroomsFetchListener listener) {
+    public void fetchChatroomsAndLastMessages(String search, final ChatroomsFetchListener listener) {
         // Step 1: Fetch chatrooms with the current user's UID
         Query chatroomsQuery = FirebaseCmd.allChatroomCollectionReference()
-                .whereArrayContains("users", currentUserId);
+                .whereArrayContains("users", FirebaseCmd.currentUserId());
 
         chatroomsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -346,10 +329,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     i++;
-                    String otherUserId = findOtherUser(userStrings, currentUserId);
+                    String otherUserId = findOtherUser(userStrings, FirebaseCmd.currentUserId());
                     Log.d("yowell","fetchChatroomsAndLastMessages().otheruserid: "+ otherUserId + " "+i);
                     Log.d("yowell","fetchChatroomsAndLastMessages().user"+ userStrings);
-                    fetchUserModel(false, otherUserId, null, null, new FetchUserCallback() {
+                    fetchUserModel(otherUserId, null, null, new FetchUserCallback() {
                         @Override
                         public void onUserFetched(UserModel user) {
                             Log.d("yowell","onUserFetched: "+user.getUsername());
@@ -364,13 +347,24 @@ public class MainActivity extends AppCompatActivity {
                                     if (!messageSnapshot.isEmpty()) {
                                         lastMessage = messageSnapshot.getDocuments().get(0).toObject(MessageModel.class);
                                     }
-
                                     ContactsModel chatroom = new ContactsModel(chatroomId, user, lastMessage);
-                                    chatrooms.add(chatroom);
-                                    if (chatrooms.size() == chatroomsSnapshot.size()-1) {
-                                        listener.onChatroomsFetched(chatrooms);
-
+                                    if (search == null || chatroom.getUser().getUsername().toLowerCase().contains(search.toLowerCase()) || chatroom.getUser().getEmail().toLowerCase().contains(search.toLowerCase())) {
+                                        chatrooms.add(chatroom);
+                                    } else if (chatroom.getLastMessage().getTimestamp()==null){
+                                        Log.d("yowell","CHATROOM IS NULL");
+                                        if (chatrooms != null){
+                                            chatrooms.sort(new Comparator<ContactsModel>() {
+                                                @Override
+                                                public int compare(ContactsModel contactsModel, ContactsModel t1) {
+                                                    return Long.compare(t1.getLastMessage().getTimestamp().getSeconds(), contactsModel.getLastMessage().getTimestamp().getSeconds());
+                                                }
+                                            });
+                                        }
                                     }
+                                    listener.onChatroomsFetched(chatrooms);
+//                                    if (chatrooms.size() == chatroomsSnapshot.size()) {
+//                                        listener.onChatroomsFetched(chatrooms);
+//                                    }
                                 } else {
                                     listener.onChatroomsFetchFailed();
                                 }
@@ -381,38 +375,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("yowell","onUserFetchFail: ");
                         }
                     });
-
-                    // Retrieve user information
-//                    fetchUserModel(false, otherUserId, null, null, user -> {
-//                        if (user != null) {
-//                            UserModel userModel = user;
-//                            // Step 4: Get the last message in the chatroom
-//                            Query messagesQuery = chatroomDoc.getReference().collection("messages")
-//                                    .orderBy("timestamp", Query.Direction.DESCENDING)
-//                                    .limit(1);
-//
-//                            messagesQuery.get().addOnCompleteListener(messageTask -> {
-//                                if (messageTask.isSuccessful()) {
-//                                    QuerySnapshot messageSnapshot = messageTask.getResult();
-//                                    MessageModel lastMessage = null;
-//                                    if (!messageSnapshot.isEmpty()) {
-//                                        lastMessage = messageSnapshot.getDocuments().get(0).toObject(MessageModel.class);
-//                                    }
-//
-//                                    ContactsModel chatroom = new ContactsModel(chatroomId, user, lastMessage);
-//                                    chatrooms.add(chatroom);
-//
-//                                    if (chatrooms.size() == chatroomsSnapshot.size()) {
-//                                        listener.onChatroomsFetched(chatrooms);
-//                                    }
-//                                } else {
-//                                    listener.onChatroomsFetchFailed();
-//                                }
-//                            });
-//                        } else {
-//                            listener.onChatroomsFetchFailed();
-//                        }
-//                    });
                 }
             } else {
                 listener.onChatroomsFetchFailed();
@@ -429,45 +391,29 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-
     public interface FetchUserCallback {
         void onUserFetched(UserModel user);
         void onUserFetchFailed();
     }
 
-    public void fetchUserModel(Boolean contacts, String uid, String username, String email, FetchUserCallback callback) {
+    public void fetchUserModel(String uid, String username, String email, FetchUserCallback callback) {
 
         Query query = null;
 
-        if (contacts==true){
-            if (username!=null){
-                query = FirebaseCmd.currentUserContactsCollection().whereEqualTo("username", username);
-            } else if (email!=null){
-                query = FirebaseCmd.currentUserContactsCollection().whereEqualTo("email", email);
-            } else if (uid!=null){
-                FirebaseCmd.currentUserContactsCollection().document(uid).get().addOnCompleteListener(task -> {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot.exists()){
-                        UserModel user = new UserModel(uid, documentSnapshot.getString("username"), documentSnapshot.getString("email"));
-                        callback.onUserFetched(user);
-                    }
-                });
-            }
-        } else {
-            if (username!=null){
-                query = FirebaseCmd.allUserCollectionReference().whereEqualTo("username", username);
-            } else if (email != null) {
-                query = FirebaseCmd.allUserCollectionReference().whereEqualTo("email", email);
-            } else if (uid != null) {
-                FirebaseCmd.currentUserContactsCollection().document(uid).get().addOnCompleteListener(task -> {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot.exists()){
-                        UserModel user = new UserModel(uid, documentSnapshot.getString("username"), documentSnapshot.getString("email"));
-                        callback.onUserFetched(user);
-                    }
-                });
-            }
+        if (username!=null){
+            query = FirebaseCmd.allUserCollectionReference().whereEqualTo("username", username);
+        } else if (email != null) {
+            query = FirebaseCmd.allUserCollectionReference().whereEqualTo("email", email);
+        } else if (uid != null) {
+            FirebaseCmd.allUserCollectionReference().document(uid).get().addOnCompleteListener(task -> {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()){
+                    UserModel user = new UserModel(uid, documentSnapshot.getString("username"), documentSnapshot.getString("email"));
+                    callback.onUserFetched(user);
+                }
+            });
         }
+
 
         if (query!=null){
             query.get().addOnCompleteListener(task -> {
