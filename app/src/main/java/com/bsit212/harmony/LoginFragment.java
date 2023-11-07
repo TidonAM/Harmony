@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,18 +22,22 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LoginFragment extends Fragment{
 
 //    TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
 //    TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
+    private String mParam1;
+    private String mParam2;
 
     static LinearLayout linearLayout;
+    int currentAccountIndex;
     static EditText etUsername;
     static EditText etPassword;
     static TextInputLayout tilShowPassword;
@@ -46,9 +51,23 @@ public class LoginFragment extends Fragment{
     }
 
     public void onClick(View v){
+        String[] usernames = {
+                "angeltidon18@yahoo.com",
+                "tatsudoni2600@gmail.com",
+                // Add more usernames as needed
+        };
+
+        String[] passwords = {
+                "angelt",
+                "tatsudoni",
+                // Add more passwords as needed
+        };
         if (v.getId() == R.id.imageView4){
-            etUsername.setText("angeltidon18@yahoo.com");
-            etPassword.setText("angelt");
+            if (currentAccountIndex < usernames.length) {
+                etUsername.setText(usernames[currentAccountIndex]);
+                etPassword.setText(passwords[currentAccountIndex]);
+                currentAccountIndex = (currentAccountIndex + 1) % usernames.length;
+            }
         } else if (v.getId() == R.id.login_btn_login) {
             if (etUsername.getText().toString() != null && etPassword.getText().toString() != null) {
                 MainActivity mainActivity = (MainActivity) getActivity();
@@ -69,6 +88,7 @@ public class LoginFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        currentAccountIndex = 0;
         View view = inflater.inflate(R.layout.fragment_login,container,false);
         linearLayout = view.findViewById(R.id.login_layout_main);
         etUsername = view.findViewById(R.id.login_et_username);
@@ -87,14 +107,16 @@ public class LoginFragment extends Fragment{
 
         return view;
     }
-
     public final TextWatcher login_textWatcher = new TextWatcher() {
+        public boolean isValid(String email) {
+            return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String stringEtPassword = etPassword.getText().toString();
             String stringEtUsername = etUsername.getText().toString();
-            if (stringEtPassword.length() < 2 || stringEtUsername.length() < 2) {
+            if (stringEtPassword.length() < 6 || !isValid(stringEtUsername)) {
                 login_changeUI(LoginState.btnDisable,getContext());
             } else {
                 login_changeUI(LoginState.btnEnable,getContext());
@@ -172,29 +194,22 @@ public class LoginFragment extends Fragment{
     }
 
 //    TODO: Rename and change types and number of parameters
-//    public static LoginFragment newInstance(String param1, String param2) {
-//        LoginFragment fragment = new LoginFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
+    public static LoginFragment newInstance(String param1, String param2) {
+        LoginFragment fragment = new LoginFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_login, container, false);
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
 
 }

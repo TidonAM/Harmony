@@ -1,8 +1,8 @@
-package com.bsit212.harmony;
+package com.bsit212.harmony.models;
 
 import com.google.firebase.Timestamp;
 
-class MessageModel {
+public class MessageModel {
     private String sender;
     private String text;
     private Timestamp timestamp;

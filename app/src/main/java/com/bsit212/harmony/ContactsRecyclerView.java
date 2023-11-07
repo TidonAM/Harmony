@@ -1,6 +1,5 @@
 package com.bsit212.harmony;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,13 +7,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bsit212.harmony.models.ContactsModel;
+import com.bsit212.harmony.models.UserModel;
+
 import java.util.List;
 
 public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
-    List<UserModel> items;
+    List<ContactsModel> items;
     private OnItemClickListener clickListener;
 
-    public ContactsRecyclerView(List<UserModel> items) {
+    public ContactsRecyclerView(List<ContactsModel> items) {
         this.items = items;
     }
 
@@ -36,11 +38,14 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
 
     @Override
     public void onBindViewHolder(@NonNull ContactsVH holder, int position) {
-        UserModel item = items.get(position);
+        ContactsModel item = items.get(position);
 
         // Set the data from the ItemData object
-        holder.textTop.setText(item.getUsername());
-        holder.textBottom.setText(item.getEmail());
+        holder.textTop.setText(item.getUser().getUsername());
+        if (item.getLastMessage() != null){
+            holder.textBottom.setText(item.getLastMessage().getText());
+        }
+
     }
 
     @Override

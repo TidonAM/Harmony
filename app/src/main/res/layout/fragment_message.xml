@@ -9,10 +9,26 @@
     android:fitsSystemWindows="true">
 
     <RelativeLayout
+        android:id="@+id/message_layout_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/white"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/BlueFadingNight"
-        android:padding="10dp"
+        android:padding="20dp"
         android:id="@+id/toolbar">
 
         <TextView
@@ -42,9 +58,8 @@
         android:id="@+id/message_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
         android:layout_above="@id/linearlayout"
-        android:padding="10dp"/>
+        android:layout_below="@id/toolbar" />
 
     <RelativeLayout
         android:id="@+id/linearlayout"

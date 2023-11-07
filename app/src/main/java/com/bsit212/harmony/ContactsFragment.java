@@ -2,13 +2,10 @@ package com.bsit212.harmony;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +13,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +23,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bsit212.harmony.cmd.FirebaseCmd;
+import com.bsit212.harmony.models.ContactsModel;
+import com.bsit212.harmony.models.UserModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -61,49 +64,70 @@ public class ContactsFragment extends Fragment {
 
     MainActivity mainActivity;
 
-    public List<UserModel> items;
+    public List<ContactsModel> items;
 
     static ContactsRecyclerView contactsRecyclerView;
 
+    private androidx.appcompat.app.AlertDialog customEmailDialog;
+
     public ContactsFragment() {
         // Required empty public constructor
+    }
+
+    public boolean isValid(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void showCustomEmailDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_addcontact, null);
         builder.setView(dialogView);
-
+        TextInputLayout tilEmail = dialogView.findViewById(R.id.til_email);
         EditText emailEditText = dialogView.findViewById(R.id.et_email);
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
+            @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilEmail.setError(null);
+            }
+        });
 
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        customEmailDialog = new MaterialAlertDialogBuilder(getActivity())
+                .setTitle("Add Email")
+                .setView(dialogView)
+                .setPositiveButton("Add", null)
+                .setNegativeButton("Cancel", null)
+                .show();
+
+        customEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View view) {
                 String email = emailEditText.getText().toString();
-                Toast.makeText(getActivity(), email, Toast.LENGTH_SHORT).show();
-                mainActivity = (MainActivity) getActivity();
-                mainActivity.createContact(email);
-                refreshContacts();
-
+                if (isValid(email)) {
+//                    Toast.makeText(getActivity(), email, Toast.LENGTH_SHORT).show();
+                    mainActivity = (MainActivity) getActivity();
+                    mainActivity.createContact(email, new MainActivity.AddContactLister() {
+                        @Override public void onContactAdd() {
+                            refreshC();
+                            customEmailDialog.dismiss(); // Dismiss the dialog here
+                        }
+                        @Override public void onContactExists() {
+                            tilEmail.setError("Contact already exists");
+                        }
+                        @Override public void onContactAddFail() {
+                            tilEmail.setError("User does not exist");
+                        }
+                    });
+                } else {
+                    tilEmail.setError("Invalid Email");
+                }
             }
         });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_contacts,container,false);
         mainActivity = (MainActivity) getActivity();
         items = new ArrayList<>();
@@ -119,39 +143,28 @@ public class ContactsFragment extends Fragment {
             Log.i("yowell","ContactsFragment: currentUserModel is null, signing out");
             mainActivity.signOut();
         }
-        if (MainActivity.isLoggedIn == true) {
-            imLogout.setEnabled(true);
-        } else {
-            imLogout.setEnabled(false);
-        }
+        if (MainActivity.isLoggedIn == true) {imLogout.setEnabled(true);} else {imLogout.setEnabled(false);}
 
-        if (TextUtils.isEmpty(etSearchStr)){
-            etSearchStr = null;
-        }
         etSearchStr = etSearch.getText().toString();
+        if (TextUtils.isEmpty(etSearchStr)){ etSearchStr = null; }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        refreshContacts();
+        refreshC();
 
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 etSearchStr = etSearch.getText().toString();
                 if (TextUtils.isEmpty(etSearchStr)){
                     etSearchStr = null;
                 } else {
                     Log.i("yowell",etSearchStr);
                 }
-                refreshContacts();
+                refreshC();
             }
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void afterTextChanged(Editable editable) {}
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override public void afterTextChanged(Editable editable) {}
         });
-
         imLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,31 +175,34 @@ public class ContactsFragment extends Fragment {
                 LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
-
         imAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showCustomEmailDialog();
             }
         });
+
         return view;
     }
-    public void refreshContacts(){
-        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
+
+    public void refreshC(){
+        Log.d("yowell","refreshC()");
+        mainActivity.fetchChatroomsAndLastMessages(FirebaseCmd.currentUserId(), new MainActivity.ChatroomsFetchListener() {
             @Override
-            public void onContactsFetched(List<UserModel> allContacts) {
+            public void onChatroomsFetched(List<ContactsModel> chatrooms) {
+                Log.d("yowell","onChatroomsFetched()");
                 items.clear();
-                items.addAll(allContacts);
+                items.addAll(chatrooms);
                 contactsRecyclerView = new ContactsRecyclerView(items);
                 contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
                     @Override
                     public void onItemClick(int position, String toptext, String bottomtext) {
-                        Log.d("yowell","refreshContacts().onItemClick(): "+toptext+" "+bottomtext);
-                        mainActivity.fetchOtherUserModel(null, toptext, null, new MainActivity.FetchUserCallback() {
+                        Log.d("yowell","refreshC().onItemClick(): "+toptext+" "+bottomtext);
+                        mainActivity.fetchUserModel(false,null, toptext, null, new MainActivity.FetchUserCallback() {
                             @Override
                             public void onUserFetched(UserModel user) {
                                 mainActivity.otherUserModel = user;
-                                Log.d("yowell","refreshContacts().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
+                                Log.d("yowell","refreshC().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
                                 mainActivity.launchFragment(MainActivity.launchFragment.message);
                             }
 
@@ -195,10 +211,14 @@ public class ContactsFragment extends Fragment {
                                 Log.e("yowell","Can't get User");
                             }
                         });
-
                     }
                 });
                 recyclerView.setAdapter(contactsRecyclerView);
+            }
+
+            @Override
+            public void onChatroomsFetchFailed() {
+                Log.e("yowell","onChatroomsFetchFailed()");
             }
         });
     }
@@ -225,9 +245,10 @@ public class ContactsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam1 = getArguments().getString("param1");
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
 }

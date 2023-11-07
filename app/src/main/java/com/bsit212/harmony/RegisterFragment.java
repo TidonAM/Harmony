@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,11 +81,15 @@ public class RegisterFragment extends Fragment {
 
     public final TextWatcher register_textWatcher = new TextWatcher() {
 
+        public boolean isValid(String email) {
+            return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        }
+
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String stringEtPassword = etPassword.getText().toString();
             String stringEtEmail = etEmail.getText().toString();
-            if (stringEtPassword.length() < 2 || stringEtEmail.length() < 2 ) {
+            if (stringEtPassword.length() < 6 || !isValid(stringEtEmail)) {
                 register_changeUI(RegisterState.btnDisable,getContext());
 
             } else {

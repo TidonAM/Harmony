@@ -15,6 +15,14 @@
         android:orientation="vertical"
         android:visibility="visible">
 
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="-75dp"
+            android:elevation="21dp"
+            app:srcCompat="@drawable/icon_note" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,12 +36,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="24dp">
-
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="85dp"
-                    app:srcCompat="@drawable/icon_note" />
 
                 <EditText
                     android:id="@+id/register_et_email"
@@ -81,7 +83,9 @@
                     app:hintAnimationEnabled="false"
                     app:hintEnabled="false"
                     app:passwordToggleEnabled="true"
-                    app:passwordToggleTint="@color/DarkGray">
+                    app:passwordToggleTint="@color/DarkGray"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/register_et_password"

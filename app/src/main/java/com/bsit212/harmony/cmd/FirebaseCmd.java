@@ -1,10 +1,11 @@
-package com.bsit212.harmony;
+package com.bsit212.harmony.cmd;
 
+import com.bsit212.harmony.MainActivity;
+import com.bsit212.harmony.models.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.bsit212.harmony.MainActivity;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class FirebaseCmd {
         }
     }
 
-    public static CollectionReference allChatroomCollectionReference(List<String> uid) {
+    public static CollectionReference allChatroomCollectionReference() {
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }
 

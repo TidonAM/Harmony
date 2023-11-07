@@ -1,4 +1,4 @@
-package com.bsit212.harmony;
+package com.bsit212.harmony.models;
 
 public class UserModel {
 

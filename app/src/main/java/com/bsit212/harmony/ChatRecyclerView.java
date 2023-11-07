@@ -7,7 +7,11 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bsit212.harmony.cmd.FirebaseCmd;
+import com.bsit212.harmony.models.*;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
@@ -30,14 +34,30 @@ public class ChatRecyclerView extends FirestoreRecyclerAdapter<MessageModel, Cha
 
     @Override
     public void onBindViewHolder(@NonNull ChatVH holder, int position, @NonNull MessageModel message) {
-        if (message.getSender().equals(MainActivity.getCurrentUIDStr())) {
+        if (message.getSender().equals(FirebaseCmd.currentUserId())) {
+            holder.tvSend.setText(message.getText());
+            holder.tvSend.setVisibility(View.VISIBLE);
+            holder.layoutSend.setVisibility(View.VISIBLE);
             holder.tvRcv.setVisibility(View.GONE);
             holder.layoutRcv.setVisibility(View.GONE);
-            holder.tvSend.setText(message.getText());
         } else {
+            holder.tvRcv.setText(message.getText());
+            holder.tvRcv.setVisibility(View.VISIBLE);
+            holder.layoutRcv.setVisibility(View.VISIBLE);
             holder.tvSend.setVisibility(View.GONE);
             holder.layoutSend.setVisibility(View.GONE);
-            holder.tvRcv.setText(message.getText());
+        }
+
+        if (position == getItemCount() - 1){
+            holder.layoutMain.setPadding(0,0,0,20);
+        } else if (position == 0) {
+            holder.layoutMain.setPadding(0,0,0,0);
+        } else {
+            holder.layoutMain.setPadding(0,0,0,0);
+        }
+
+        if(position != 0 && position != getItemCount()-1){
+
         }
     }
 
@@ -45,7 +65,8 @@ public class ChatRecyclerView extends FirestoreRecyclerAdapter<MessageModel, Cha
         TextView tvSend;
         TextView tvRcv;
         RelativeLayout layoutSend;
-        RelativeLayout layoutRcv;
+        CardView layoutRcv;
+        RelativeLayout layoutMain;
 
         public ChatVH(@NonNull View itemView) {
             super(itemView);
@@ -53,6 +74,7 @@ public class ChatRecyclerView extends FirestoreRecyclerAdapter<MessageModel, Cha
             tvRcv = itemView.findViewById(R.id.tv_rcv);
             layoutSend = itemView.findViewById(R.id.layout_send);
             layoutRcv = itemView.findViewById(R.id.layout_rcv);
+            layoutMain  = itemView.findViewById(R.id.layout_main);
         }
     }
 }
