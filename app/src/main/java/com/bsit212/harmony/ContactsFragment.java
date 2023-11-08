@@ -235,6 +235,28 @@ public class ContactsFragment extends Fragment {
             @Override
             public void onChatroomsFetchFailed() {
                 Log.e("yowell","onChatroomsFetchFailed()");
+                items.clear();
+                contactsRecyclerView = new ContactsRecyclerView(items);
+                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, String toptext, String bottomtext) {
+                        Log.d("yowell","refreshC().onItemClick(): "+toptext+" "+bottomtext);
+                        mainActivity.fetchUserModel(null, toptext, null, new MainActivity.FetchUserCallback() {
+                            @Override
+                            public void onUserFetched(UserModel user) {
+                                mainActivity.otherUserModel = user;
+                                Log.d("yowell","refreshC().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
+                                mainActivity.launchFragment(MainActivity.launchFragment.message);
+                            }
+                            @Override
+                            public void onUserFetchFailed() {
+                                Log.e("yowell","Can't get User");
+                            }
+                        });
+                    }
+                });
+                recyclerView.setAdapter(contactsRecyclerView);
+                isLoading(false);
             }
         });
     }

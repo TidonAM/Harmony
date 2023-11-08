@@ -340,10 +340,8 @@ public class MainActivity extends AppCompatActivity {
         void onChatroomsFetchFailed();
     }
     public void fetchChatroomsAndLastMessages(String search, final ChatroomsFetchListener listener) {
-        // Step 1: Fetch chatrooms with the current user's UID
         Query chatroomsQuery = FirebaseCmd.allChatroomCollectionReference()
                 .whereArrayContains("users", FirebaseCmd.currentUserId());
-
         chatroomsQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot chatroomsSnapshot = task.getResult();
@@ -351,71 +349,79 @@ public class MainActivity extends AppCompatActivity {
 
                 int i = 0;
 
-                for (QueryDocumentSnapshot chatroomDoc : chatroomsSnapshot) {
-                    List<String> userStrings = new ArrayList<>();
-                    String chatroomId = chatroomDoc.getId();
-                    List<Object> users = (List<Object>) chatroomDoc.get("users");
-                    if (users != null) {
-                        int d;
-                        for (Object user : users) {
+                Log.d("yowell","fetchChatroomsAndLastMessages().chatroomsQuery is successful");
 
-                            if (user instanceof String) {
-                                userStrings.add((String) user);
+                if(chatroomsSnapshot.isEmpty()){
+                    listener.onChatroomsFetchFailed();
+                } else {
+                    for (QueryDocumentSnapshot chatroomDoc : chatroomsSnapshot) {
+                        List<String> userStrings = new ArrayList<>();
+                        String chatroomId = chatroomDoc.getId();
+                        List<Object> users = (List<Object>) chatroomDoc.get("users");
+                        if (users != null) {
+                            int d;
+                            for (Object user : users) {
+                                if (user instanceof String) {
+                                    userStrings.add((String) user);
+                                }
                             }
                         }
-                    }
-                    i++;
-                    String otherUserId = findOtherUser(userStrings, FirebaseCmd.currentUserId());
-                    Log.d("yowell","fetchChatroomsAndLastMessages().otheruserid: "+ otherUserId + " "+i);
-                    Log.d("yowell","fetchChatroomsAndLastMessages().user"+ userStrings);
-                    fetchUserModel(otherUserId, null, null, new FetchUserCallback() {
-                        @Override
-                        public void onUserFetched(UserModel user) {
-                            Log.d("yowell","onUserFetched: "+user.getUsername());
-                            // Step 4: Get the last message in the chatroom
-                            Query messagesQuery = chatroomDoc.getReference().collection("messages")
-                                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                                    .limit(1);
-                            messagesQuery.get().addOnCompleteListener(messageTask -> {
-                                if (messageTask.isSuccessful()) {
-                                    QuerySnapshot messageSnapshot = messageTask.getResult();
-                                    MessageModel lastMessage = null;
-                                    if (!messageSnapshot.isEmpty()) {
-                                        lastMessage = messageSnapshot.getDocuments().get(0).toObject(MessageModel.class);
-                                    }
-                                    ContactsModel chatroom = new ContactsModel(chatroomId, user, lastMessage);
-                                    if (search == null || chatroom.getUser().getUsername().toLowerCase().contains(search.toLowerCase()) || chatroom.getUser().getEmail().toLowerCase().contains(search.toLowerCase())) {
-                                        chatrooms.add(chatroom);
-                                    }
-
-                                    if (chatroom.getLastMessage().getTimestamp()!=null){
-                                        Log.d("yowell","CHATROOM IS NULL");
-                                        if (chatrooms != null){
-                                            chatrooms.sort(new Comparator<ContactsModel>() {
-                                                @Override
-                                                public int compare(ContactsModel contactsModel, ContactsModel t1) {
-                                                    return Long.compare(t1.getLastMessage().getTimestamp().getSeconds(), contactsModel.getLastMessage().getTimestamp().getSeconds());
-                                                }
-                                            });
+                        i++;
+                        String otherUserId = findOtherUser(userStrings, FirebaseCmd.currentUserId());
+                        Log.d("yowell","fetchChatroomsAndLastMessages().otheruserid: "+ otherUserId + " "+i);
+                        Log.d("yowell","fetchChatroomsAndLastMessages().user"+ userStrings);
+                        fetchUserModel(otherUserId, null, null, new FetchUserCallback() {
+                            @Override
+                            public void onUserFetched(UserModel user) {
+                                Log.d("yowell","onUserFetched: "+user.getUsername());
+                                // Step 4: Get the last message in the chatroom
+                                Query messagesQuery = chatroomDoc.getReference().collection("messages")
+                                        .orderBy("timestamp", Query.Direction.DESCENDING)
+                                        .limit(1);
+                                messagesQuery.get().addOnCompleteListener(messageTask -> {
+                                    if (messageTask.isSuccessful()) {
+                                        QuerySnapshot messageSnapshot = messageTask.getResult();
+                                        MessageModel lastMessage = null;
+                                        if (!messageSnapshot.isEmpty()) {
+                                            lastMessage = messageSnapshot.getDocuments().get(0).toObject(MessageModel.class);
                                         }
-                                    }
-                                    listener.onChatroomsFetched(chatrooms);
+                                        ContactsModel chatroom = new ContactsModel(chatroomId, user, lastMessage);
+                                        if (search == null || chatroom.getUser().getUsername().toLowerCase().contains(search.toLowerCase()) || chatroom.getUser().getEmail().toLowerCase().contains(search.toLowerCase())) {
+                                            chatrooms.add(chatroom);
+                                        }
+
+                                        if (chatroom.getLastMessage().getTimestamp()!=null){
+                                            Log.d("yowell","CHATROOM IS NULL");
+                                            if (chatrooms != null){
+                                                chatrooms.sort(new Comparator<ContactsModel>() {
+                                                    @Override
+                                                    public int compare(ContactsModel contactsModel, ContactsModel t1) {
+                                                        return Long.compare(t1.getLastMessage().getTimestamp().getSeconds(), contactsModel.getLastMessage().getTimestamp().getSeconds());
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        listener.onChatroomsFetched(chatrooms);
 //                                    if (chatrooms.size() == chatroomsSnapshot.size()) {
 //                                        listener.onChatroomsFetched(chatrooms);
 //                                    }
-                                } else {
-                                    listener.onChatroomsFetchFailed();
-                                }
-                            });
-                        }
-                        @Override
-                        public void onUserFetchFailed() {
-                            Log.d("yowell","onUserFetchFail: ");
-                        }
-                    });
+                                    } else {
+                                        listener.onChatroomsFetchFailed();
+                                    }
+                                });
+                            }
+                            @Override
+                            public void onUserFetchFailed() {
+                                Log.d("yowell","onUserFetchFail: ");
+                                listener.onChatroomsFetchFailed();
+                            }
+                        });
+                    }
                 }
+
             } else {
                 listener.onChatroomsFetchFailed();
+                Log.d("yowell","fetchChatroomsAndLastMessages().chatroomsQuery is not successful");
             }
         });
     }
