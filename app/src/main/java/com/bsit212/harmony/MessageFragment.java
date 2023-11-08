@@ -74,9 +74,10 @@ public class MessageFragment extends Fragment {
 
         if (otherUserModel == null) {
             Toast.makeText(getActivity(),"Invalid User",Toast.LENGTH_SHORT);
-            Log.e("yowell","Invalid User");
+            Log.e("yowell","Invalid Other User");
             mainActivity.launchFragment(MainActivity.launchFragment.contacts);
         } else {
+            Log.e("yowell","messageFragment(): "+otherUserModel.getUid());
             chatroomId = FirebaseCmd.getChatroomId(FirebaseCmd.currentUserId(),otherUserModel.getUid());
             tvUsername = view.findViewById(R.id.message_tv_username);
             recyclerView = view.findViewById(R.id.message_recyclerview);

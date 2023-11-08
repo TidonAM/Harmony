@@ -20,4 +20,9 @@
         <item name="cornerSize">8dp</item>
     </style>
 
+    <style name="darker" parent="Theme.Harmony">
+        <item name="android:ambientShadowAlpha">1</item>
+        <item name="android:spotShadowAlpha">1</item>
+    </style>
+
 </resources>

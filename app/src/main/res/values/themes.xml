@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Harmony" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.Harmony" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/BlueCornflower</item>
         <item name="colorPrimaryVariant">@color/BlueDarkPastel</item>
@@ -18,6 +18,11 @@
     <style name="ShapeAppearanceOverlay.MyApp.Dialog.Rounded" parent="Theme.MaterialComponents">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="darkerShadow" parent="Theme.Harmony">
+        <item name="android:ambientShadowAlpha">1</item>
+        <item name="android:spotShadowAlpha">1</item>
     </style>
 
 </resources>

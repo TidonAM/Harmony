@@ -1,6 +1,9 @@
 package com.bsit212.harmony.models;
 
-public class UserModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class UserModel implements Parcelable {
 
     private String uid;
     private String username;
@@ -34,6 +37,36 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    protected UserModel(Parcel in) {
+        uid = in.readString();
+        username = in.readString();
+        email = in.readString();
+    }
+
+    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel in) {
+            return new UserModel(in);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(uid);
+        dest.writeString(username);
+        dest.writeString(email);
     }
 
 }

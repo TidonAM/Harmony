@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -141,7 +142,7 @@ public class ContactsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.contacts_recyclerview);
 
         if (mainActivity.currentUserModel != null) {
-            tvUsername.setText(mainActivity.currentUserModel.getUsername());
+            tvUsername.setText("Hi, "+mainActivity.currentUserModel.getUsername()+"!");
         } else {
             Log.i("yowell","ContactsFragment: currentUserModel is null, signing out");
             mainActivity.signOut();
@@ -189,38 +190,6 @@ public class ContactsFragment extends Fragment {
 
         return view;
     }
-//    public void refreshContacts(){
-//        mainActivity.fetchContacts(etSearchStr,new MainActivity.ContactsFetchListener() {
-//            @Override
-//            public void onContactsFetched(List<UserModel> allContacts) {
-//                items.clear();
-//                items.addAll(allContacts);
-//                contactsRecyclerView = new ContactsRecyclerView(items);
-//                contactsRecyclerView.setOnItemClickListener(new ContactsRecyclerView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(int position, String toptext, String bottomtext) {
-//                        Log.d("yowell","refreshContacts().onItemClick(): "+toptext+" "+bottomtext);
-//                        mainActivity.fetchUserModel(true,null, toptext, null, new MainActivity.FetchUserCallback() {
-//                            @Override
-//                            public void onUserFetched(UserModel user) {
-//                                mainActivity.otherUserModel = user;
-//                                Log.d("yowell","refreshContacts().onUserFetched(): " + mainActivity.otherUserModel.getUsername() + " " + mainActivity.otherUserModel.getEmail());
-//                                mainActivity.launchFragment(MainActivity.launchFragment.message);
-//                            }
-//
-//                            @Override
-//                            public void onUserFetchFailed() {
-//                                Log.e("yowell","Can't get User");
-//                            }
-//                        });
-//
-//                    }
-//                });
-//                recyclerView.setAdapter(contactsRecyclerView);
-//            }
-//        });
-//
-//    }
 
     public void isLoading(boolean bool){
         if (bool==true){
@@ -298,4 +267,9 @@ public class ContactsFragment extends Fragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
 }

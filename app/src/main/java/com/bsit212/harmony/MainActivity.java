@@ -3,6 +3,7 @@ package com.bsit212.harmony;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 //    public String currentUsername;
 //    public static String otherUsername;
     public static UserModel otherUserModel;
+    private Fragment currentFragment;
     public UserModel currentUserModel;
     public ChatroomModel chatroomModel;
     public String chatroomId;
@@ -77,7 +80,43 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        launchFragment(launchFragment.login);
+
+        if (savedInstanceState != null){
+            isLoggedIn = savedInstanceState.getBoolean("isLoggedsIn");
+            currentUserModel = savedInstanceState.getParcelable("currentUserModel");
+            if (currentUserModel.getUid() != null){
+                Log.i("yowell","currentUserModel: "+currentUserModel.getUid().toString());
+            }
+            otherUserModel = savedInstanceState.getParcelable("otherUserModel");
+            if (otherUserModel != null){
+                Log.i("yowell","otherUserModel: "+otherUserModel.getUid().toString());
+            }
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            if(currentUser != null && isLoggedIn == false){
+                getCurrentUserModel(new getCurrentUserCallback() {
+                    @Override
+                    public void onCurrentUserFetched(UserModel userModel) {
+                        currentUserModel = userModel;
+                        launchFragment(launchFragment.contacts);
+                        isLoggedIn = true;
+                    }
+                    @Override
+                    public void onCurrentUserFetchedFailed() {
+                        finish();
+                    }
+                });
+                super.onStart();
+            } else {
+                otherUserModel = new UserModel(null,null,null);
+                super.onStart();
+            }
+        } else {
+            super.onStart();
+            launchFragment(launchFragment.login);
+        }
+
+
     }
 
     public void launchFragment(launchFragment launchFragment){
@@ -88,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                         .replace(R.id.fl_main,lg).commit();
                 setBackground(1);
+                currentFragment = lg;
                 break;
             case contacts:
                 ContactsFragment ct = new ContactsFragment();
@@ -95,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_from_left)
                         .replace(R.id.fl_main,ct).commit();
                 setBackground(1);
+                currentFragment = ct;
                 break;
             case message:
                 MessageFragment ms = new MessageFragment();
@@ -102,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(R.anim.slide_in_top, R.anim.slide_out_bottom)
                         .replace(R.id.fl_main,ms).commit();
                 setBackground(3);
-
+                currentFragment = ms;
                 break;
             case register:
                 RegisterFragment fr = new RegisterFragment();
@@ -110,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(android.R.anim.fade_in, R.anim.fade_out)
                         .replace(R.id.fl_main,fr).commit();
                 setBackground(1);
+                currentFragment = fr;
                 break;
             case call:
                 CallFragment cl = new CallFragment();
@@ -117,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                         .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                         .replace(R.id.fl_main,cl).commit();
                 setBackground(1);
+                currentFragment = cl;
                 break;
         }
 
@@ -207,21 +250,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    public void forgot(String email){
-    }
-
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
         launchFragment(launchFragment.login);
         isLoggedIn=false;
-//        LoginFragment.login_changeUI(LoginFragment.LoginState.out_success, this);
     }
-
     public interface ContactsFetchListener {
         void onContactsFetched(List<UserModel> allContacts);
     }
-
     public interface AddContactLister {
         void onContactAdd();
         void onContactAddFail();
@@ -350,7 +386,9 @@ public class MainActivity extends AppCompatActivity {
                                     ContactsModel chatroom = new ContactsModel(chatroomId, user, lastMessage);
                                     if (search == null || chatroom.getUser().getUsername().toLowerCase().contains(search.toLowerCase()) || chatroom.getUser().getEmail().toLowerCase().contains(search.toLowerCase())) {
                                         chatrooms.add(chatroom);
-                                    } else if (chatroom.getLastMessage().getTimestamp()==null){
+                                    }
+
+                                    if (chatroom.getLastMessage().getTimestamp()!=null){
                                         Log.d("yowell","CHATROOM IS NULL");
                                         if (chatrooms != null){
                                             chatrooms.sort(new Comparator<ContactsModel>() {
@@ -381,7 +419,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private String findOtherUser(List<String> users, String currentUser) {
         for (String user : users) {
             if (!user.equals(currentUser)) {
@@ -390,12 +427,10 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
-
     public interface FetchUserCallback {
         void onUserFetched(UserModel user);
         void onUserFetchFailed();
     }
-
     public void fetchUserModel(String uid, String username, String email, FetchUserCallback callback) {
 
         Query query = null;
@@ -438,12 +473,10 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
     public interface MessageCallback {
         void onMessagesReceived(List<MessageModel> messages, Query messagesCollectionSorted, CollectionReference messagesCollection);
         void onMessageFetchFailed();
     }
-
     public void getOrCreateChatroom(String uid2, MessageCallback callback) {
         String chatroomId = FirebaseCmd.getChatroomId(FirebaseCmd.currentUserId(), uid2);
         DocumentReference chatroomDocRef = FirebaseCmd.getChatroomReference(chatroomId);
@@ -459,7 +492,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void getMessages(DocumentReference chatroomReference, MessageCallback callback) {
         CollectionReference messagesCollection = chatroomReference.collection("messages");
         Query messagesCollectionSorted = messagesCollection.orderBy("timestamp", Query.Direction.ASCENDING);
@@ -482,7 +514,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
     }
-
     private void createChatroom(DocumentReference chatroomDocRef, MessageCallback callback) {
         List<String> users = new LinkedList<>();
         users.add(FirebaseCmd.currentUserId());
@@ -497,7 +528,6 @@ public class MainActivity extends AppCompatActivity {
                     // Handle the case where creating the chatroom failed
                 });
     }
-
     public void getCurrentUserModel(getCurrentUserCallback callback) {
         FirebaseCmd.currentUserInfo().get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -515,7 +545,6 @@ public class MainActivity extends AppCompatActivity {
                     callback.onCurrentUserFetchedFailed();
                 });
     }
-
     public interface getCurrentUserCallback {
         void onCurrentUserFetched(UserModel userModel);
         void onCurrentUserFetchedFailed();
@@ -538,10 +567,8 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 }
             });
-
             super.onStart();
         } else {
-
             super.onStart();
         }
         Log.i("yowell","null");
@@ -567,6 +594,22 @@ public class MainActivity extends AppCompatActivity {
         else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        Log.d("yowell","onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isLoggedIn", isLoggedIn);
+        outState.putParcelable("currentUserModel", currentUserModel);
+        outState.putParcelable("currentUserModel", otherUserModel);
+
+//        getSupportFragmentManager().putFragment(outState, "currentFragment",currentFragment);
     }
 }
 

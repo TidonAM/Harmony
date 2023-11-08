@@ -47,11 +47,11 @@ public class ContactsRecyclerView extends RecyclerView.Adapter<ContactsVH> {
         holder.textSide.setText(item.getUser().getEmail());
         String sender = null;
         if (item.getLastMessage() != null){
-            if (item.getLastMessage().getSender() == FirebaseCmd.currentUserId()){
-                Log.d("yowell",item.getLastMessage().getSender());
+            if (item.getLastMessage().getSender().equals(FirebaseCmd.currentUserId())){
+                Log.d("yowell",item.getLastMessage().getSender()+ " "+ FirebaseCmd.currentUserId());
                 sender = "You: ";
             } else {
-                sender = item.getLastMessage().getSender() + ": ";
+                sender = item.getUser().getUsername() + ": ";
                 Log.d("yowell",item.getLastMessage().getSender());
             }
             holder.textBottom.setText(sender+item.getLastMessage().getText());
