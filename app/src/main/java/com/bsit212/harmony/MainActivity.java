@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.Editable;
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null){
             isLoggedIn = savedInstanceState.getBoolean("isLoggedsIn");
             currentUserModel = savedInstanceState.getParcelable("currentUserModel");
+            chatroomId = savedInstanceState.getString("chatroomId");
             if (currentUserModel.getUid() != null){
                 Log.i("yowell","currentUserModel: "+currentUserModel.getUid().toString());
             }
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             if (otherUserModel != null){
                 Log.i("yowell","otherUserModel: "+otherUserModel.getUid().toString());
             }
+        } else {
             FirebaseUser currentUser = mAuth.getCurrentUser();
 
             if(currentUser != null && isLoggedIn == false){
@@ -108,12 +113,10 @@ public class MainActivity extends AppCompatActivity {
                 });
                 super.onStart();
             } else {
-                otherUserModel = new UserModel(null,null,null);
+                launchFragment(launchFragment.login);
                 super.onStart();
             }
-        } else {
-            super.onStart();
-            launchFragment(launchFragment.login);
+
         }
 
 
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_from_left)
                         .replace(R.id.fl_main,ct).commit();
-                setBackground(1);
+                setBackground(4);
                 currentFragment = ct;
                 break;
             case message:
@@ -166,21 +169,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setBackground(int bg){
+        int i = 0;
+        int orientation = getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+            i = R.drawable.bg_cloud_ls;
+        } else {
+            i = R.drawable.bg_cloud;
+        }
         switch(bg){
             case 1:
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
+                getWindow().setBackgroundDrawableResource(i);
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,android.R.color.transparent));
                 break;
             case 2:
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_call);
+                getWindow().setBackgroundDrawableResource(i);
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,android.R.color.transparent));
                 break;
             case 3:
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
+                getWindow().setBackgroundDrawableResource(i);
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,R.color.BlueFadingNight));
                 break;
+            case 4:
+                getWindow().setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.BlueDarkPastel)));
+                break;
             default:
-                getWindow().setBackgroundDrawableResource(R.drawable.bg_cloud);
+                getWindow().setBackgroundDrawableResource(i);
                 Toast.makeText(MainActivity.this, "defaultBG", Toast.LENGTH_SHORT).show();
                 getWindow().setStatusBarColor(ContextCompat.getColor(this,android.R.color.transparent));
                 break;
@@ -304,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public void fetchContacts(String search, ContactsFetchListener listener){
         Log.i("yowell","fetchContacts()");
         Query allContactsQuery = FirebaseCmd.currentUserContactsCollection();
@@ -352,6 +366,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("yowell","fetchChatroomsAndLastMessages().chatroomsQuery is successful");
 
                 if(chatroomsSnapshot.isEmpty()){
+                    Log.d("yowell","chatroomsSnapshot.isEmpty()");
                     listener.onChatroomsFetchFailed();
                 } else {
                     for (QueryDocumentSnapshot chatroomDoc : chatroomsSnapshot) {
@@ -390,16 +405,30 @@ public class MainActivity extends AppCompatActivity {
                                             chatrooms.add(chatroom);
                                         }
 
-                                        if (chatroom.getLastMessage().getTimestamp()!=null){
-                                            Log.d("yowell","CHATROOM IS NULL");
-                                            if (chatrooms != null){
-                                                chatrooms.sort(new Comparator<ContactsModel>() {
-                                                    @Override
-                                                    public int compare(ContactsModel contactsModel, ContactsModel t1) {
-                                                        return Long.compare(t1.getLastMessage().getTimestamp().getSeconds(), contactsModel.getLastMessage().getTimestamp().getSeconds());
-                                                    }
-                                                });
+                                        if (chatroom.getLastMessage()!=null ){
+                                            if (chatroom.getLastMessage().getTimestamp()!=null){
+                                                Log.d("yowell",chatroom.getLastMessage().getText());
+                                                if (chatrooms != null){
+                                                    chatrooms.sort(new Comparator<ContactsModel>() {
+                                                        @Override public int compare(ContactsModel c1, ContactsModel c2) {
+                                                            MessageModel lastMessage1 = c1.getLastMessage();
+                                                            MessageModel lastMessage2 = c2.getLastMessage();
+                                                            // Check if either of the ContactsModel has no lastMessage
+                                                            if (lastMessage1 == null && lastMessage2 == null) {
+                                                                return 0; // Both have no last message, they are considered equal.
+                                                            } else if (lastMessage1 == null) {
+                                                                return -1; // contactsModel1 has no last message, it goes to the bottom.
+                                                            } else if (lastMessage2 == null) {
+                                                                return 1; // contactsModel2 has no last message, it goes to the bottom.
+                                                            } else {
+                                                                // Compare based on the timestamp of the last message.
+                                                                return Long.compare(lastMessage2.getTimestamp().getSeconds(), lastMessage1.getTimestamp().getSeconds());
+                                                            }
+                                                        }
+                                                    });
+                                                }
                                             }
+
                                         }
                                         listener.onChatroomsFetched(chatrooms);
 //                                    if (chatrooms.size() == chatroomsSnapshot.size()) {
@@ -577,7 +606,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onStart();
         }
-        Log.i("yowell","null");
     }
 
     @Override
@@ -613,7 +641,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putBoolean("isLoggedIn", isLoggedIn);
         outState.putParcelable("currentUserModel", currentUserModel);
-        outState.putParcelable("currentUserModel", otherUserModel);
+        outState.putParcelable("otherUserModel", otherUserModel);
+        outState.putString("chatRoomId",chatroomId);
 
 //        getSupportFragmentManager().putFragment(outState, "currentFragment",currentFragment);
     }

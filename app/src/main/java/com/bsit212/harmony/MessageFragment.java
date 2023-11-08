@@ -70,6 +70,7 @@ public class MessageFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_message,container,false);
         mainActivity = (MainActivity) getActivity();
         otherUserModel = mainActivity.otherUserModel;
+        Log.d("yowell","MessageFragment().otherUserModel: "+otherUserModel.getUsername());
         visibleProgress(true);
 
         if (otherUserModel == null) {

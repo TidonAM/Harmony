@@ -21,15 +21,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bsit212.harmony.cmd.FirebaseCmd;
 import com.bsit212.harmony.models.ContactsModel;
+import com.bsit212.harmony.models.MessageModel;
 import com.bsit212.harmony.models.UserModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +59,7 @@ public class ContactsFragment extends Fragment {
     static ImageButton imLogout;
 
     static ImageButton imAdd;
+    static ImageView nomessage;
 
     public EditText etSearch;
     static ProgressBar progressBar;
@@ -107,20 +112,45 @@ public class ContactsFragment extends Fragment {
             public void onClick(View view) {
                 String email = emailEditText.getText().toString();
                 if (isValid(email)) {
-//                    Toast.makeText(getActivity(), email, Toast.LENGTH_SHORT).show();
                     mainActivity = (MainActivity) getActivity();
-                    mainActivity.createContact(email, new MainActivity.AddContactLister() {
-                        @Override public void onContactAdd() {
-                            refreshC();
-                            customEmailDialog.dismiss(); // Dismiss the dialog here
+//                    mainActivity.createContact(email, new MainActivity.AddContactLister() {
+//                        @Override public void onContactAdd() {
+//                            refreshC();
+//                            customEmailDialog.dismiss(); // Dismiss the dialog here
+//                        }
+//                        @Override public void onContactExists() {
+//                            tilEmail.setError("Contact already exists");
+//                        }
+//                        @Override public void onContactAddFail() {
+//                            tilEmail.setError("User does not exist");
+//                        }
+//                    });
+                    mainActivity.fetchUserModel(null, null, email, new MainActivity.FetchUserCallback() {
+                        @Override
+                        public void onUserFetched(UserModel user) {
+                            Log.d("yowell","FETCHED USER IN ADD CONTACTS: "+user.getUid());
+                            mainActivity.otherUserModel = user;
+                            mainActivity.getOrCreateChatroom(user.getUid(), new MainActivity.MessageCallback() {
+                                @Override
+                                public void onMessagesReceived(List<MessageModel> messages, Query messagesCollectionSorted, CollectionReference messagesCollection) {
+                                    refreshC();
+                                    customEmailDialog.dismiss();
+                                    mainActivity.launchFragment(MainActivity.launchFragment.message);
+                                }
+                                @Override
+                                public void onMessageFetchFailed() {
+                                    refreshC();
+                                    customEmailDialog.dismiss();
+                                }
+                            });
                         }
-                        @Override public void onContactExists() {
-                            tilEmail.setError("Contact already exists");
-                        }
-                        @Override public void onContactAddFail() {
+
+                        @Override
+                        public void onUserFetchFailed() {
                             tilEmail.setError("User does not exist");
                         }
                     });
+
                 } else {
                     tilEmail.setError("Invalid Email");
                 }
@@ -140,6 +170,7 @@ public class ContactsFragment extends Fragment {
         imAdd = view.findViewById(R.id.home_ib_add);
         etSearch = view.findViewById(R.id.contacts_searchuser);
         recyclerView = view.findViewById(R.id.contacts_recyclerview);
+        nomessage = view.findViewById(R.id.contacts_nomessage);
 
         if (mainActivity.currentUserModel != null) {
             tvUsername.setText("Hi, "+mainActivity.currentUserModel.getUsername()+"!");
@@ -178,7 +209,6 @@ public class ContactsFragment extends Fragment {
                     mainActivity.signOut();
                     mainActivity.isLoggedIn = false;
                 }
-                LoginFragment.login_changeUI(LoginFragment.LoginState.out_ongoing,getContext());
             }
         });
         imAdd.setOnClickListener(new View.OnClickListener() {
@@ -191,15 +221,8 @@ public class ContactsFragment extends Fragment {
         return view;
     }
 
-    public void isLoading(boolean bool){
-        if (bool==true){
-            progressBar.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-    }
+    public void noMessage(boolean bool){if (bool==true){nomessage.setVisibility(View.VISIBLE);} else {nomessage.setVisibility(View.GONE);}}
+    public void isLoading(boolean bool){if (bool==true){progressBar.setVisibility(View.VISIBLE);recyclerView.setVisibility(View.GONE);} else {progressBar.setVisibility(View.GONE);recyclerView.setVisibility(View.VISIBLE);}}
     public void refreshC(){
         isLoading(true);
         Log.d("yowell","refreshC()");
@@ -230,6 +253,7 @@ public class ContactsFragment extends Fragment {
                 });
                 recyclerView.setAdapter(contactsRecyclerView);
                 isLoading(false);
+                noMessage(false);
             }
 
             @Override
@@ -257,6 +281,7 @@ public class ContactsFragment extends Fragment {
                 });
                 recyclerView.setAdapter(contactsRecyclerView);
                 isLoading(false);
+                noMessage(true);
             }
         });
     }

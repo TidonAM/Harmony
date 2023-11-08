@@ -104,8 +104,8 @@ public class LoginFragment extends Fragment{
         });
     }
     public void onClick(View v){
-        String[] usernames = {"angeltidon18@yahoo.com", "tatsudoni2600@gmail.com"};
-        String[] passwords = {"angelt", "tatsudoni"};
+        String[] usernames = {"angeltidon18@yahoo.com", "tatsudoni2600@gmail.com","mg@gmail.com"};
+        String[] passwords = {"angelt", "tatsudoni","mgmgmg"};
         if (v.getId() == R.id.imageView4){
             if (currentAccountIndex < usernames.length) {
                 etUsername.setText(usernames[currentAccountIndex]);
